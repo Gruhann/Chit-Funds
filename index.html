@@ -5,519 +5,698 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>Chit Fund Manager</title>
   <meta name="theme-color" content="#0F0F0F" media="(prefers-color-scheme: dark)"/>
-  <meta name="theme-color" content="#F8F8F8" media="(prefers-color-scheme: light)"/>
+  <meta name="theme-color" content="#F5F5F0" media="(prefers-color-scheme: light)"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Overpass+Mono:wght@600;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config={darkMode:'media',theme:{extend:{fontFamily:{
-    serif:['DM Serif Display','Georgia','serif'],
-    sans:['Plus Jakarta Sans','system-ui','sans-serif'],
-    mono:['Overpass Mono','monospace']},
-    colors:{cred:{bg:'#0F0F0F',bg2:'#1A1A1A',bg3:'#222222',border:'#2A2A2A',border2:'#333333',
-      lbg:'#F8F8F8',lbg2:'#FFFFFF',lbg3:'#F0F0F0',lborder:'#E8E8E8',
-      text:'#F8F8F8',textSec:'#8A8A8A',textMute:'#555555',
-      green:'#00C48C',greenDark:'#00A876',greenLight:'#E6FFF6',
-      blue:'#4B7BF5',purple:'#7B61FF',
-      amber:'#FFB800',amberLight:'#FFF8E6',
-      red:'#FF4B4B',redLight:'#FFF0F0',
-      pink:'#FF6B9D'}}}}}</script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
   <style>
+    :root{--bg:#F5F5F0;--bg2:#FFFFFF;--bg3:#EBEBEB;--brd:#DCDCD6;--txt:#0F0F0F;--txt2:#6B6B6B;--txt3:#999;--grn:#00C48C;--grn2:#00875F;--grn3:#E6FFF6;--blu:#4B7BF5;--amb:#FFB800;--red:#FF4B4B;--serif:'DM Serif Display',Georgia,serif;--sans:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'Overpass Mono',monospace}
+    @media(prefers-color-scheme:dark){:root{--bg:#0F0F0F;--bg2:#1A1A1A;--bg3:#252525;--brd:#2A2A2A;--txt:#F8F8F8;--txt2:#8A8A8A;--txt3:#555;--grn3:#0a3326}}
     *{-webkit-tap-highlight-color:transparent;box-sizing:border-box;margin:0}
-    body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
-    body{background:#F8F8F8;color:#1A1A1A}
-    @media(prefers-color-scheme:dark){body{background:#0F0F0F;color:#F8F8F8}}
-    input:focus{outline:none;border-color:#00C48C!important;box-shadow:0 0 0 3px rgba(0,196,140,0.15)}
+    body{font-family:var(--sans);background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
     @media(prefers-color-scheme:dark){input[type="date"]{color-scheme:dark}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#2A2A2A;border-radius:4px}}
-
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    input:focus{outline:none;border-color:var(--grn)!important;box-shadow:0 0 0 3px rgba(0,196,140,0.15)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
-    @keyframes popIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
-    @keyframes checkPop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-    @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(0,196,140,0.1)}50%{box-shadow:0 0 30px rgba(0,196,140,0.25)}}
-    @keyframes countSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes barFill{from{width:0}to{width:var(--bar-w)}}
-    @keyframes breathe{0%,100%{opacity:0.7}50%{opacity:1}}
-    @keyframes stagger{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes heroIn{from{opacity:0;transform:translateY(-10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-    @keyframes buttonPress{0%{transform:scale(1)}50%{transform:scale(0.95)}100%{transform:scale(1)}}
-
-    .anim-fade{animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both}
-    .anim-pop{animation:popIn .4s cubic-bezier(.16,1,.3,1) both}
-    .anim-hero{animation:heroIn .6s cubic-bezier(.16,1,.3,1) both}
-    .anim-slide{animation:slideUp .35s cubic-bezier(.16,1,.3,1) both}
-    .anim-check{animation:checkPop .35s cubic-bezier(.34,1.56,.64,1) both}
-    .anim-glow{animation:glow 3s ease-in-out infinite}
-    .anim-count{animation:countSlide .4s cubic-bezier(.16,1,.3,1) both}
-    .anim-breathe{animation:breathe 2.5s ease-in-out infinite}
-    .anim-bar{animation:barFill .8s cubic-bezier(.16,1,.3,1) both}
-    .stagger{animation:stagger .5s cubic-bezier(.16,1,.3,1) both}
-
-    .neo-btn{position:relative;transition:all .15s ease}
-    .neo-btn:active{transform:translateY(3px)!important}
-    .neo-btn-primary{background:#00C48C;color:#0F0F0F;box-shadow:0 4px 0 0 #00875F,0 6px 20px rgba(0,196,140,0.3)}
-    .neo-btn-primary:active{box-shadow:0 1px 0 0 #00875F,0 2px 10px rgba(0,196,140,0.2)}
-    .neo-btn-dark{background:#1A1A1A;color:#F8F8F8;border:1px solid #2A2A2A;box-shadow:0 4px 0 0 #000,0 6px 15px rgba(0,0,0,0.2)}
-    @media(prefers-color-scheme:light){
-      .neo-btn-dark{background:#fff;color:#1A1A1A;border:1px solid #E8E8E8;box-shadow:0 4px 0 0 #D0D0D0,0 6px 15px rgba(0,0,0,0.06)}
-    }
-    .neo-btn-dark:active{box-shadow:0 1px 0 0 #000,0 2px 8px rgba(0,0,0,0.15)}
-    .neo-btn-danger{background:#FF4B4B;color:#fff;box-shadow:0 4px 0 0 #CC3333,0 6px 15px rgba(255,75,75,0.25)}
-    .neo-btn-danger:active{box-shadow:0 1px 0 0 #CC3333}
-    .neo-btn-amber{background:#FFB800;color:#0F0F0F;box-shadow:0 4px 0 0 #CC9300,0 6px 15px rgba(255,184,0,0.25)}
-    .neo-btn-amber:active{box-shadow:0 1px 0 0 #CC9300}
+    @keyframes popIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
+    @keyframes checkBounce{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+    @keyframes barGrow{from{width:0}}
+    @keyframes glow{0%,100%{box-shadow:0 0 15px rgba(0,196,140,0.08)}50%{box-shadow:0 0 25px rgba(0,196,140,0.2)}}
+    @keyframes breathe{0%,100%{opacity:.65}50%{opacity:1}}
+    .af{animation:fadeUp .45s cubic-bezier(.16,1,.3,1) both}
+    .ap{animation:popIn .35s cubic-bezier(.16,1,.3,1) both}
+    .asu{animation:slideUp .3s cubic-bezier(.16,1,.3,1) both}
+    .ach{animation:checkBounce .3s cubic-bezier(.34,1.56,.64,1) both}
+    .ag{animation:glow 3s ease-in-out infinite}
+    .abr{animation:breathe 2.5s ease-in-out infinite}
+    .abar{animation:barGrow .7s cubic-bezier(.16,1,.3,1) both}
+    .st{animation:fadeUp .45s cubic-bezier(.16,1,.3,1) both}
+    .hd{font-family:var(--serif)}
+    .mn{font-family:var(--mono)}
+    .neo{position:relative;font-weight:700;border-radius:12px;padding:14px 24px;font-size:14px;transition:transform .1s;cursor:pointer;border:none;width:100%;letter-spacing:0.02em}
+    .neo:active{transform:translateY(3px)}
+    .neo:disabled{opacity:.35;pointer-events:none}
+    .neo-g{background:var(--grn);color:#0F0F0F;box-shadow:0 4px 0 0 var(--grn2),0 8px 20px rgba(0,196,140,.25)}
+    .neo-g:active{box-shadow:0 1px 0 0 var(--grn2),0 3px 10px rgba(0,196,140,.15)}
+    .neo-d{background:var(--bg2);color:var(--txt);border:1px solid var(--brd);box-shadow:0 4px 0 0 var(--bg3),0 6px 12px rgba(0,0,0,.06)}
+    .neo-d:active{box-shadow:0 1px 0 0 var(--bg3)}
+    .neo-r{background:var(--red);color:#fff;box-shadow:0 4px 0 0 #c33,0 8px 15px rgba(255,75,75,.2)}
+    .neo-r:active{box-shadow:0 1px 0 0 #c33}
+    .neo-a{background:var(--amb);color:#0F0F0F;box-shadow:0 4px 0 0 #c90,0 8px 15px rgba(255,184,0,.2)}
+    .neo-a:active{box-shadow:0 1px 0 0 #c90}
+    .card{background:var(--bg2);border:1px solid var(--brd);border-radius:16px}
+    .lbl{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.15em}
+    #err{display:none;padding:20px;background:#FFE0E0;color:#c00;font-family:monospace;font-size:13px;white-space:pre-wrap;margin:20px;border-radius:8px}
   </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root" style="text-align:center;padding:60px 20px;color:var(--txt2);font-family:var(--sans)">Loading...</div>
+<div id="err"></div>
+
 <script type="text/babel">
-const {useState,useEffect,useRef}=React;
+try {
+const {useState, useEffect} = React;
 
-const PRESETS=[
-  {value:20000,label:"\u20b920,000",before:1000,after:1100,commission:500},
-  {value:50000,label:"\u20b950,000",before:2500,after:3000,commission:2500},
-  {value:100000,label:"\u20b91,00,000",before:5000,after:6000,commission:5000},
-  {value:200000,label:"\u20b92,00,000",before:10000,after:12000,commission:10000},
-  {value:500000,label:"\u20b95,00,000",before:25000,after:30000,commission:25000},
+const PRESETS = [
+  {value: 20000, label: "\u20b920,000", before: 1000, after: 1100, commission: 500},
+  {value: 50000, label: "\u20b950,000", before: 2500, after: 3000, commission: 2500},
+  {value: 100000, label: "\u20b91,00,000", before: 5000, after: 6000, commission: 5000},
+  {value: 200000, label: "\u20b92,00,000", before: 10000, after: 12000, commission: 10000},
+  {value: 500000, label: "\u20b95,00,000", before: 25000, after: 30000, commission: 25000}
 ];
-const N=20,SK="chitfund-v6";
-const fmt=n=>"\u20b9"+Math.round(Number(n)).toLocaleString("en-IN");
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-const fmtD=d=>{if(!d)return"";return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short"});};
-const fmtDF=d=>{if(!d)return"";return new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});};
-const hasC="contacts" in navigator;
-const addMo=(s,m)=>{const d=new Date(s);d.setMonth(d.getMonth()+m);return d.toISOString().split("T")[0];};
+const N = 20;
+const SK = "chitfund-v7";
+const fmt = n => "\u20b9" + Math.round(Number(n)).toLocaleString("en-IN");
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const fmtD = d => { if (!d) return ""; return new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "short"}); };
+const fmtDF = d => { if (!d) return ""; return new Date(d).toLocaleDateString("en-IN", {day: "numeric", month: "short", year: "numeric"}); };
+const hasC = "contacts" in navigator;
+const addMo = (s, m) => { const d = new Date(s); d.setMonth(d.getMonth() + m); return d.toISOString().split("T")[0]; };
+const sd = i => ({animationDelay: (i * 60) + "ms"});
 
-const getRate=(m,mo,g)=>(!m.liftedMonth?g.before:mo>m.liftedMonth?g.after:g.before);
-const getPayout=(g,mo)=>g.members.reduce((s,m)=>s+getRate(m,mo,g),0)-(g.commission||0);
-const getTD=(m,g)=>{let t=0;for(let i=1;i<=g.currentMonth;i++)t+=getRate(m,i,g);return t;};
-const getTP=(m,g)=>{let t=0;Object.keys(m.payments||{}).forEach(k=>{if(m.payments[k]?.paid)t+=getRate(m,+k,g);});return t;};
-const getPM=(g,mo)=>g.members.filter(m=>m.payments?.[mo]?.paid).length;
-const getLM=(g,mo)=>g.members.find(m=>m.liftedMonth===mo);
-const getMD=(g,mo)=>g.members.reduce((s,m)=>s+getRate(m,mo,g),0);
-const getMC=(g,mo)=>g.members.reduce((s,m)=>m.payments?.[mo]?.paid?s+getRate(m,mo,g):s,0);
-const getE=g=>{let t=0;for(let mo=1;mo<=g.currentMonth;mo++){if(getLM(g,mo))t+=(g.commission||0);}return t;};
-const load=()=>{try{return JSON.parse(localStorage.getItem(SK))||{groups:[]};}catch{return{groups:[]};}};
-const save=d=>{try{localStorage.setItem(SK,JSON.stringify(d));}catch{}};
+const getRate = (m, mo, g) => (!m.liftedMonth ? g.before : mo > m.liftedMonth ? g.after : g.before);
+const getPayout = (g, mo) => g.members.reduce((s, m) => s + getRate(m, mo, g), 0) - (g.commission || 0);
+const getTD = (m, g) => { let t = 0; for (let i = 1; i <= g.currentMonth; i++) t += getRate(m, i, g); return t; };
+const getTP = (m, g) => { let t = 0; Object.keys(m.payments || {}).forEach(k => { if (m.payments[k] && m.payments[k].paid) t += getRate(m, parseInt(k), g); }); return t; };
+const getPM = (g, mo) => g.members.filter(m => m.payments && m.payments[mo] && m.payments[mo].paid).length;
+const getLM = (g, mo) => g.members.find(m => m.liftedMonth === mo);
+const getMD = (g, mo) => g.members.reduce((s, m) => s + getRate(m, mo, g), 0);
+const getMC = (g, mo) => g.members.reduce((s, m) => (m.payments && m.payments[mo] && m.payments[mo].paid) ? s + getRate(m, mo, g) : s, 0);
+const getE = g => { let t = 0; for (let mo = 1; mo <= g.currentMonth; mo++) { if (getLM(g, mo)) t += (g.commission || 0); } return t; };
+const load = () => { try { return JSON.parse(localStorage.getItem(SK)) || {groups: []}; } catch(e) { return {groups: []}; } };
+const save = d => { try { localStorage.setItem(SK, JSON.stringify(d)); } catch(e) {} };
 
-// Stagger delay helper
-const sd=i=>({animationDelay:`${i*70}ms`});
+function Badge({children, color}) {
+  const colors = {green: {bg: "var(--grn3)", color: "var(--grn)"}, blue: {bg: "rgba(75,123,245,0.12)", color: "var(--blu)"}, amber: {bg: "rgba(255,184,0,0.12)", color: "var(--amb)"}};
+  const c = colors[color] || colors.green;
+  return <span style={{background: c.bg, color: c.color, padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-block"}}>{children}</span>;
+}
 
-// ─── ATOMS ───
-const Badge=({children,color="green"})=>{
-  const c={
-    green:"bg-cred-green/15 text-cred-green",
-    blue:"bg-cred-blue/15 text-cred-blue",
-    amber:"bg-cred-amber/15 text-cred-amber",
-    red:"bg-cred-red/15 text-cred-red",
-    muted:"bg-cred-bg3 dark:bg-cred-bg3 text-cred-textSec",
+function Header({title, subtitle, onBack}) {
+  return (
+    <div className="af" style={{position: "sticky", top: 0, zIndex: 10, background: "var(--bg)", borderBottom: "1px solid var(--brd)", padding: "16px 20px", backdropFilter: "blur(12px)"}}>
+      <div style={{display: "flex", alignItems: "center", gap: 12}}>
+        {onBack && <button onClick={onBack} style={{width: 40, height: 40, borderRadius: 12, background: "var(--bg2)", border: "1px solid var(--brd)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "var(--txt)", fontSize: 18, transition: "transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(0.9)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>&#x2190;</button>}
+        <div style={{flex: 1, minWidth: 0}}>
+          <h1 className="hd" style={{fontSize: 20, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{title}</h1>
+          {subtitle && <p style={{fontSize: 12, color: "var(--txt2)", margin: "2px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{subtitle}</p>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Stat({label, value, accent}) {
+  return (
+    <div className="card ap" style={{padding: 14, flex: 1, minWidth: 0}}>
+      <div className="lbl" style={{marginBottom: 6}}>{label}</div>
+      <div className="mn" style={{fontSize: 17, fontWeight: 700, color: accent ? "var(--grn)" : "var(--txt)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{value}</div>
+    </div>
+  );
+}
+
+function Modal({title, children, onClose}) {
+  return (
+    <div style={{position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "flex-end", justifyContent: "center"}} onClick={onClose}>
+      <div style={{position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)"}} className="af"/>
+      <div className="asu" style={{position: "relative", background: "var(--bg2)", width: "100%", maxWidth: 420, borderRadius: "20px 20px 0 0", padding: 24, maxHeight: "85vh", overflowY: "auto"}} onClick={e => e.stopPropagation()}>
+        <div style={{width: 40, height: 4, background: "var(--brd)", borderRadius: 4, margin: "0 auto 16px"}}/>
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20}}>
+          <h2 className="hd" style={{fontSize: 20, margin: 0}}>{title}</h2>
+          <button onClick={onClose} style={{width: 32, height: 32, borderRadius: 16, background: "var(--bg3)", border: "none", color: "var(--txt2)", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"}}>&times;</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function BarFill({current, total}) {
+  const pct = total > 0 ? Math.round(current / total * 100) : 0;
+  return (
+    <div style={{width: "100%", background: "var(--bg3)", borderRadius: 6, height: 6, overflow: "hidden"}}>
+      <div className="abar" style={{height: "100%", borderRadius: 6, background: "var(--grn)", width: pct + "%"}}/>
+    </div>
+  );
+}
+
+function MonthNav({vm, cur, onChange}) {
+  const btn = {width: 42, height: 42, borderRadius: 10, background: "transparent", border: "none", color: "var(--txt)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"};
+  return (
+    <div className="card af" style={{display: "flex", alignItems: "center", padding: 4}}>
+      <button style={{...btn, opacity: vm <= 1 ? 0.2 : 1}} disabled={vm <= 1} onClick={() => onChange(Math.max(1, vm - 1))}>&#x2190;</button>
+      <div style={{flex: 1, textAlign: "center"}}>
+        <div className="mn" style={{fontSize: 14, fontWeight: 700}}>Month {vm} <span style={{color: "var(--txt2)", fontWeight: 400}}>/ {N}</span></div>
+        {vm !== cur ? <button onClick={() => onChange(cur)} style={{fontSize: 11, color: "var(--grn)", fontWeight: 700, background: "none", border: "none", cursor: "pointer", letterSpacing: "0.1em"}}>CURRENT &#x2192; M{cur}</button>
+        : <div className="abr" style={{fontSize: 11, color: "var(--grn)", fontWeight: 700}}>&#x25CF; CURRENT</div>}
+      </div>
+      <button style={{...btn, opacity: vm >= cur ? 0.2 : 1}} disabled={vm >= cur} onClick={() => onChange(Math.min(cur, vm + 1))}>&#x2192;</button>
+    </div>
+  );
+}
+
+function PayOption({label, emoji, bg, color, onClick}) {
+  return (
+    <button onClick={onClick} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "24px 0", borderRadius: 14, background: bg, border: "1px solid " + color + "33", cursor: "pointer", transition: "transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(0.95)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
+      <span style={{fontSize: 36}}>{emoji}</span>
+      <span style={{fontWeight: 700, fontSize: 13, color: color, letterSpacing: "0.1em", textTransform: "uppercase"}}>{label}</span>
+    </button>
+  );
+}
+
+function HomeScreen({data, nav}) {
+  const gs = data.groups || [];
+  const te = gs.reduce((s, g) => s + getE(g), 0);
+  return (
+    <div style={{minHeight: "100vh", background: "var(--bg)"}}>
+      <div className="af" style={{padding: "40px 24px 32px"}}>
+        <div className="lbl" style={{marginBottom: 12}}>Chit Fund Manager</div>
+        <div className="hd" style={{fontSize: 36, lineHeight: 1.1}}>{gs.length} Active<br/>Group{gs.length !== 1 ? "s" : ""}</div>
+        {te > 0 && <div style={{marginTop: 12, display: "inline-block", background: "var(--grn3)", padding: "6px 12px", borderRadius: 8}}>
+          <span style={{fontSize: 14, fontWeight: 700, color: "var(--grn)"}}>Commission: <span className="mn">{fmt(te)}</span></span>
+        </div>}
+      </div>
+      <div style={{padding: "0 20px 120px", display: "flex", flexDirection: "column", gap: 12}}>
+        {gs.length === 0 && <div className="af" style={{textAlign: "center", padding: "80px 20px"}}>
+          <div style={{fontSize: 48, marginBottom: 16}}>📋</div>
+          <div className="hd" style={{fontSize: 22, marginBottom: 8}}>No groups yet</div>
+          <div style={{fontSize: 14, color: "var(--txt2)"}}>Create your first chit group</div>
+        </div>}
+        {gs.map((g, idx) => {
+          const paid = getPM(g, g.currentMonth);
+          const tot = g.members.length;
+          const lft = g.members.filter(m => m.liftedMonth).length;
+          return (
+            <button key={g.id} className="card st" style={{...sd(idx), padding: 20, textAlign: "left", cursor: "pointer", width: "100%", transition: "transform .15s"}} onClick={() => nav("group", {groupId: g.id})} onMouseDown={e=>e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
+              <div style={{display: "flex", justifyContent: "space-between", marginBottom: 14}}>
+                <div>
+                  <div className="hd" style={{fontSize: 18}}>{g.name}</div>
+                  <div style={{fontSize: 12, color: "var(--txt2)", marginTop: 4}}>Month {g.currentMonth} of {N}</div>
+                </div>
+                <div className="mn" style={{fontSize: 17, fontWeight: 700, color: "var(--grn)"}}>{fmt(g.value)}</div>
+              </div>
+              <div style={{display: "flex", alignItems: "center", gap: 10, marginBottom: 12}}>
+                <BarFill current={paid} total={tot}/>
+                <span className="mn" style={{fontSize: 12, color: "var(--txt2)", fontWeight: 700, whiteSpace: "nowrap"}}>{paid}/{tot}</span>
+              </div>
+              <div style={{display: "flex", gap: 16, fontSize: 11, color: "var(--txt3)", fontWeight: 600}}>
+                <span>{tot} members</span><span>{lft} lifted</span>
+                {g.startDate && <span>{fmtD(g.startDate)}</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      <div style={{position: "fixed", bottom: 0, left: 0, right: 0, padding: 20, background: "linear-gradient(transparent, var(--bg) 40%)", paddingTop: 50}}>
+        <button className="neo neo-g" onClick={() => nav("create")}>+ New Chit Group</button>
+      </div>
+    </div>
+  );
+}
+
+function CreateScreen({nav, updateData}) {
+  const [step, setStep] = useState(0);
+  const [pi, setPi] = useState(null);
+  const [name, setName] = useState("");
+  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
+
+  const create = () => {
+    const p = PRESETS[pi];
+    const g = {id: uid(), name: name.trim() || (p.label + " Chit"), value: p.value, before: p.before, after: p.after, commission: p.commission, currentMonth: 1, members: [], startDate: startDate, endDate: addMo(startDate, N), createdAt: new Date().toISOString()};
+    updateData(d => ({...d, groups: [...d.groups, g]}));
+    nav("group", {groupId: g.id});
   };
-  return <span className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold tracking-wider uppercase ${c[color]||c.green}`}>{children}</span>;
-};
 
-const NeoBtn=({children,onClick,variant="primary",full,size="md",disabled})=>{
-  const sz={sm:"px-5 py-2.5 text-xs",md:"px-6 py-3.5 text-sm",lg:"px-8 py-4 text-base"};
-  return <button onClick={onClick} disabled={disabled}
-    className={`neo-btn rounded-xl font-bold tracking-wide ${sz[size]} neo-btn-${variant} ${full?"w-full":""} disabled:opacity-30 disabled:pointer-events-none select-none`}>{children}</button>;
-};
-
-const Header=({title,subtitle,onBack})=>(
-  <div className="sticky top-0 z-10 backdrop-blur-xl bg-cred-lbg/80 dark:bg-cred-bg/80 border-b border-cred-lborder/50 dark:border-cred-border/50 px-5 py-4 anim-fade">
-    <div className="flex items-center gap-3">
-      {onBack&&<button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-xl bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder dark:border-cred-border hover:scale-110 active:scale-90 transition-transform shadow-sm">
-        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 3L5 9l7 6"/></svg>
-      </button>}
-      <div className="flex-1 min-w-0">
-        <h1 className="font-serif text-xl text-cred-bg dark:text-cred-text truncate">{title}</h1>
-        {subtitle&&<p className="text-xs text-cred-textSec truncate mt-0.5 tracking-wide">{subtitle}</p>}
-      </div>
-    </div>
-  </div>
-);
-
-const Stat=({label,value,accent})=>(
-  <div className="bg-cred-lbg2 dark:bg-cred-bg2 rounded-xl p-3.5 flex-1 min-w-0 border border-cred-lborder/50 dark:border-cred-border/50 anim-count">
-    <div className="text-[10px] font-bold text-cred-textSec uppercase tracking-[0.15em] mb-1.5">{label}</div>
-    <div className={`font-mono text-lg font-bold truncate ${accent?"text-cred-green":"text-cred-bg dark:text-cred-text"}`}>{value}</div>
-  </div>
-);
-
-const Modal=({title,children,onClose})=>(
-  <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
-    <div className="absolute inset-0 bg-black/50 dark:bg-black/70" style={{animation:'fadeIn .2s ease both'}}/>
-    <div className="relative bg-cred-lbg2 dark:bg-cred-bg2 w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 max-h-[85vh] overflow-y-auto anim-slide border-t border-cred-lborder/50 dark:border-cred-border/50" onClick={e=>e.stopPropagation()}>
-      <div className="w-10 h-1 bg-cred-lborder dark:bg-cred-border rounded-full mx-auto mb-5 sm:hidden"/>
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="font-serif text-xl text-cred-bg dark:text-cred-text">{title}</h2>
-        <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-cred-lbg3 dark:bg-cred-bg3 text-cred-textSec text-sm hover:scale-110 active:scale-90 transition-transform">&times;</button>
-      </div>
-      {children}
-    </div>
-  </div>
-);
-
-const Empty=({icon,title,sub})=>(
-  <div className="flex flex-col items-center justify-center py-24 px-8 text-center anim-fade">
-    <div className="text-5xl mb-5">{icon}</div>
-    <div className="font-serif text-2xl text-cred-bg dark:text-cred-text mb-2">{title}</div>
-    <div className="text-sm text-cred-textSec leading-relaxed">{sub}</div>
-  </div>
-);
-
-const BarFill=({current,total})=>{
-  const pct=total>0?Math.round(current/total*100):0;
-  return <div className="w-full bg-cred-lbg3 dark:bg-cred-bg3 rounded-full h-1.5 overflow-hidden">
-    <div className="h-full rounded-full bg-cred-green anim-bar" style={{"--bar-w":`${pct}%`,width:`${pct}%`}}/>
-  </div>;
-};
-
-const MonthNav=({vm,cur,onChange})=>(
-  <div className="flex items-center justify-between bg-cred-lbg2 dark:bg-cred-bg2 rounded-xl border border-cred-lborder/50 dark:border-cred-border/50 px-1 py-1 anim-fade">
-    <button onClick={()=>onChange(Math.max(1,vm-1))} disabled={vm<=1} className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-cred-lbg3 dark:hover:bg-cred-bg3 active:scale-90 disabled:opacity-20 transition-all">
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 3L5 9l7 6"/></svg>
-    </button>
-    <div className="text-center flex-1">
-      <div className="font-mono text-sm font-bold text-cred-bg dark:text-cred-text">Month {vm}<span className="text-cred-textSec font-normal"> / {N}</span></div>
-      {vm!==cur?<button onClick={()=>onChange(cur)} className="text-[11px] text-cred-green font-bold tracking-wider">CURRENT → M{cur}</button>
-      :<div className="text-[11px] text-cred-green font-bold tracking-wider anim-breathe">● CURRENT</div>}
-    </div>
-    <button onClick={()=>onChange(Math.min(cur,vm+1))} disabled={vm>=cur} className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-cred-lbg3 dark:hover:bg-cred-bg3 active:scale-90 disabled:opacity-20 transition-all">
-      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M6 3l7 6-7 6"/></svg>
-    </button>
-  </div>
-);
-
-const PayOption=({label,emoji,accent,onClick})=>(
-  <button onClick={onClick} className={`flex-1 flex flex-col items-center gap-3 py-7 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 ${accent}`}>
-    <span className="text-4xl">{emoji}</span>
-    <span className="font-bold text-sm tracking-wider uppercase">{label}</span>
-  </button>
-);
-
-// ─── HOME ───
-function HomeScreen({data,nav}){
-  const gs=data.groups||[];const te=gs.reduce((s,g)=>s+getE(g),0);
-  return(
-    <div className="min-h-screen bg-cred-lbg dark:bg-cred-bg">
-      <div className="px-6 pt-10 pb-8 anim-hero">
-        <div className="text-[11px] font-bold text-cred-textSec uppercase tracking-[0.25em] mb-3">Chit Fund Manager</div>
-        <div className="font-serif text-4xl text-cred-bg dark:text-cred-text leading-tight">{gs.length} Active<br/>Group{gs.length!==1?"s":""}</div>
-        {te>0&&<div className="mt-3 inline-block bg-cred-green/10 px-3 py-1.5 rounded-lg"><span className="text-sm font-bold text-cred-green">Commission: <span className="font-mono">{fmt(te)}</span></span></div>}
-      </div>
-      <div className="px-5 space-y-3 pb-28">
-        {gs.length===0&&<Empty icon="📋" title="No groups yet" sub="Create your first chit group to start managing payments"/>}
-        {gs.map((g,idx)=>{const paid=getPM(g,g.currentMonth);const tot=g.members.length;const lft=g.members.filter(m=>m.liftedMonth).length;
-          return(<button key={g.id} onClick={()=>nav("group",{groupId:g.id})} style={sd(idx)}
-            className="stagger w-full bg-cred-lbg2 dark:bg-cred-bg2 rounded-2xl p-5 border border-cred-lborder/50 dark:border-cred-border/50 text-left hover:scale-[1.01] active:scale-[0.98] transition-all">
-            <div className="flex items-start justify-between mb-4">
-              <div><div className="font-serif text-lg text-cred-bg dark:text-cred-text">{g.name}</div><div className="text-xs text-cred-textSec mt-1 tracking-wide">Month {g.currentMonth} of {N}</div></div>
-              <div className="font-mono text-lg font-bold text-cred-green">{fmt(g.value)}</div>
-            </div>
-            <div className="flex items-center gap-3 mb-3"><BarFill current={paid} total={tot}/><span className="font-mono text-xs text-cred-textSec font-bold">{paid}/{tot}</span></div>
-            <div className="flex gap-4 text-[11px] text-cred-textSec font-semibold tracking-wide"><span>{tot} members</span><span>{lft} lifted</span>{g.startDate&&<span>{fmtD(g.startDate)}</span>}</div>
-          </button>);})}
-      </div>
-      <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-cred-lbg dark:from-cred-bg via-cred-lbg/90 dark:via-cred-bg/90 to-transparent pt-14">
-        <NeoBtn full variant="primary" size="lg" onClick={()=>nav("create")}>+ New Chit Group</NeoBtn>
-      </div>
-    </div>
-  );
-}
-
-// ─── CREATE ───
-function CreateScreen({nav,updateData}){
-  const [step,setStep]=useState(0);const [pi,setPi]=useState(null);const [name,setName]=useState("");
-  const [sd2,setSd]=useState(new Date().toISOString().split("T")[0]);
-  const create=()=>{const p=PRESETS[pi];const g={id:uid(),name:name.trim()||`${p.label} Chit`,value:p.value,before:p.before,after:p.after,commission:p.commission,currentMonth:1,members:[],startDate:sd2,endDate:addMo(sd2,N),createdAt:new Date().toISOString()};updateData(d=>({...d,groups:[...d.groups,g]}));nav("group",{groupId:g.id});};
-  return(
-    <div className="min-h-screen bg-cred-lbg dark:bg-cred-bg">
-      <Header title="New Group" onBack={()=>nav("home")}/>
-      <div className="px-5 py-6">
-        {step===0&&<div className="anim-fade"><div className="text-[11px] font-bold text-cred-textSec uppercase tracking-[0.2em] mb-5">Select chit value</div>
-          <div className="grid grid-cols-2 gap-3">{PRESETS.map((p,i)=>(
-            <button key={i} onClick={()=>{setPi(i);setStep(1);}} style={sd(i)}
-              className="stagger bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder/50 dark:border-cred-border/50 rounded-2xl p-5 text-left hover:border-cred-green/50 active:scale-95 transition-all group">
-              <div className="font-serif text-xl text-cred-green mb-2 group-hover:scale-105 transition-transform origin-left">{p.label}</div>
-              <div className="text-xs text-cred-textSec font-semibold">{fmt(p.before)} → {fmt(p.after)}</div>
-              <div className="text-[11px] text-cred-textMute mt-1 font-semibold">Commission {fmt(p.commission)}</div>
-            </button>))}</div>
-        </div>}
-        {step===1&&pi!==null&&<div className="anim-fade space-y-5">
-          <div><div className="text-[11px] font-bold text-cred-textSec uppercase tracking-[0.2em] mb-2">Group name</div>
-          <input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder={`${PRESETS[pi].label} Chit`} className="w-full bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder dark:border-cred-border rounded-xl px-4 py-3.5 text-base text-cred-bg dark:text-cred-text placeholder-cred-textMute transition-all"/></div>
-          <div><div className="text-[11px] font-bold text-cred-textSec uppercase tracking-[0.2em] mb-2">Start date</div>
-          <input type="date" value={sd2} onChange={e=>setSd(e.target.value)} className="w-full bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder dark:border-cred-border rounded-xl px-4 py-3.5 text-base text-cred-bg dark:text-cred-text transition-all"/></div>
-          <div className="bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder/50 dark:border-cred-border/50 rounded-2xl p-5 space-y-3 anim-pop">
-            <div className="font-serif text-lg text-cred-bg dark:text-cred-text mb-1">Summary</div>
-            {[["Chit value",PRESETS[pi].label],["Before lift",fmt(PRESETS[pi].before)+"/mo"],["After lift",fmt(PRESETS[pi].after)+"/mo"],["Duration",N+" months"],["Period",fmtDF(sd2)+" — "+fmtDF(addMo(sd2,N))]].map(([k,v],i)=>
-              <div key={i} className="flex justify-between text-sm"><span className="text-cred-textSec">{k}</span><span className="font-semibold text-cred-bg dark:text-cred-text">{v}</span></div>)}
-            <div className="flex justify-between text-sm border-t border-cred-lborder/50 dark:border-cred-border/50 pt-3">
-              <span className="text-cred-textSec">Commission</span><span className="font-bold text-cred-green font-mono">{fmt(PRESETS[pi].commission)}/mo</span></div>
+  return (
+    <div style={{minHeight: "100vh", background: "var(--bg)"}}>
+      <Header title="New Group" onBack={() => nav("home")}/>
+      <div style={{padding: "24px 20px"}}>
+        {step === 0 && <div className="af">
+          <div className="lbl" style={{marginBottom: 16}}>Select chit value</div>
+          <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12}}>
+            {PRESETS.map((p, i) => (
+              <button key={i} className="card st" style={{...sd(i), padding: 20, textAlign: "left", cursor: "pointer", transition: "transform .15s, border-color .2s"}} onClick={() => {setPi(i); setStep(1);}} onMouseDown={e=>e.currentTarget.style.transform="scale(0.95)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
+                <div className="hd" style={{fontSize: 20, color: "var(--grn)", marginBottom: 8}}>{p.label}</div>
+                <div style={{fontSize: 12, color: "var(--txt2)", fontWeight: 600}}>{fmt(p.before)} &#x2192; {fmt(p.after)}</div>
+                <div style={{fontSize: 11, color: "var(--txt3)", marginTop: 4, fontWeight: 600}}>Commission {fmt(p.commission)}</div>
+              </button>
+            ))}
           </div>
-          <div className="bg-cred-green/8 border border-cred-green/20 rounded-2xl p-4 anim-pop" style={{animationDelay:'100ms'}}>
-            <div className="text-[11px] text-cred-green font-bold uppercase tracking-[0.15em] mb-2">Payout preview</div>
-            <div className="text-sm text-cred-bg dark:text-cred-text">Month 1: <strong className="font-mono text-cred-green">{fmt(PRESETS[pi].value-PRESETS[pi].commission)}</strong></div>
-            <div className="text-sm text-cred-bg dark:text-cred-text">Month 2: <strong className="font-mono text-cred-green">{fmt(PRESETS[pi].value-PRESETS[pi].commission+(PRESETS[pi].after-PRESETS[pi].before))}</strong></div>
-            <div className="text-xs text-cred-green/60 mt-1.5">+{fmt(PRESETS[pi].after-PRESETS[pi].before)} added monthly</div>
-          </div>
-          <div className="flex gap-3 pt-2"><NeoBtn variant="dark" onClick={()=>setStep(0)}>Back</NeoBtn><NeoBtn variant="primary" full onClick={create}>Create Group</NeoBtn></div>
         </div>}
-      </div>
-    </div>
-  );
-}
-
-// ─── GROUP ───
-function GroupScreen({group:g,nav,updateData}){
-  const [modal,setModal]=useState(null);const [an,setAn]=useState("");const [ap,setAp]=useState("");
-  const [showAdd,setShowAdd]=useState(false);const [vm,setVm]=useState(g?g.currentMonth:1);const [pms,setPms]=useState([]);
-  useEffect(()=>{if(g)setVm(g.currentMonth);},[g?.currentMonth]);
-  if(!g) return null;
-
-  const isCur=vm===g.currentMonth;const paid=getPM(g,vm);const tot=g.members.length;
-  const lv=getLM(g,vm);const nl=g.members.filter(m=>!m.liftedMonth);
-  const unpaid=g.members.filter(m=>!m.payments?.[vm]?.paid);const payout=getPayout(g,vm);
-
-  const addMem=()=>{if(!an.trim()||tot>=N)return;updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:[...x.members,{id:uid(),name:an.trim(),phone:ap.trim(),liftedMonth:null,payments:{}}]}:x)}));setAn("");setAp("");};
-  const addBulk=()=>{if(!pms.length)return;const add=pms.slice(0,N-tot).map(p=>({id:uid(),name:p.name,phone:p.phone,liftedMonth:null,payments:{}}));updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:[...x.members,...add]}:x)}));setPms([]);};
-  const pickC=async()=>{if(!hasC)return;try{const c=await navigator.contacts.select(["name","tel"],{multiple:true});if(c?.length)setPms(prev=>[...prev,...c.map(x=>({name:x.name?.[0]||"",phone:x.tel?.[0]||""})).filter(x=>x.name)]);}catch{}};
-  const recPay=(mid,mode)=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(m=>m.id===mid?{...m,payments:{...m.payments,[vm]:{paid:true,mode,date:new Date().toISOString()}}}:m)}:x)}));setModal(null);};
-  const allPay=mode=>{const now=new Date().toISOString();updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(m=>m.payments?.[vm]?.paid?m:{...m,payments:{...m.payments,[vm]:{paid:true,mode,date:now}}})}:x)}));setModal(null);};
-  const undoP=mid=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(m=>{if(m.id!==mid)return m;const p={...m.payments};delete p[vm];return{...m,payments:p};})}:x)}));};
-  const give=mid=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(m=>m.id===mid?{...m,liftedMonth:g.currentMonth}:m)}:x)}));setModal(null);};
-  const nextM=()=>{if(g.currentMonth>=N)return;updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,currentMonth:x.currentMonth+1}:x)}));};
-  const delG=()=>{updateData(d=>({...d,groups:d.groups.filter(x=>x.id!==g.id)}));nav("home");};
-
-  return(
-    <div className="min-h-screen bg-cred-lbg dark:bg-cred-bg pb-32">
-      <Header title={g.name} subtitle={fmt(g.value)+" · "+N+" months"} onBack={()=>nav("home")}/>
-      {g.startDate&&<div className="px-5 pt-2 pb-1 flex gap-2 text-[11px] text-cred-textMute font-semibold tracking-wide anim-fade"><span>{fmtDF(g.startDate)}</span><span>—</span><span>{fmtDF(g.endDate)}</span></div>}
-      <div className="px-5 py-3"><MonthNav vm={vm} cur={g.currentMonth} onChange={setVm}/></div>
-
-      {!isCur&&<div className="mx-5 mb-3 bg-cred-amber/10 border border-cred-amber/20 rounded-xl px-4 py-3 text-sm text-cred-amber font-bold text-center anim-pop">Viewing month {vm}</div>}
-
-      <div className="px-5 pb-3 flex gap-2">{[["Due",fmt(getMD(g,vm))],["Collected",fmt(getMC(g,vm)),true],["Paid",`${paid}/${tot}`]].map(([l,v,a],i)=>
-        <Stat key={i} label={l} value={v} accent={a}/>)}</div>
-
-      {/* Payout — the hero card */}
-      <div className={`mx-5 mb-3 rounded-2xl p-5 border anim-pop ${lv?"bg-cred-green/8 border-cred-green/20 anim-glow":"bg-cred-lbg2 dark:bg-cred-bg2 border-cred-lborder/50 dark:border-cred-border/50"}`}>
-        <div className="flex items-end justify-between">
+        {step === 1 && pi !== null && <div className="af" style={{display: "flex", flexDirection: "column", gap: 20}}>
           <div>
-            <div className="text-[11px] text-cred-green font-bold uppercase tracking-[0.2em] mb-2">Lifter receives</div>
-            <div className="font-serif text-3xl text-cred-bg dark:text-cred-text anim-count">{fmt(payout)}</div>
+            <div className="lbl" style={{marginBottom: 8}}>Group name</div>
+            <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder={PRESETS[pi].label + " Chit"} style={{width: "100%", background: "var(--bg2)", border: "1px solid var(--brd)", borderRadius: 12, padding: "14px 16px", fontSize: 15, color: "var(--txt)", fontFamily: "var(--sans)"}}/>
           </div>
-          <div className="text-right text-[11px] text-cred-textSec font-semibold leading-relaxed">
-            <div>Pool <span className="font-mono">{fmt(getMD(g,vm))}</span></div>
-            <div>Commission <span className="font-mono text-cred-amber">-{fmt(g.commission||0)}</span></div>
+          <div>
+            <div className="lbl" style={{marginBottom: 8}}>Start date</div>
+            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={{width: "100%", background: "var(--bg2)", border: "1px solid var(--brd)", borderRadius: 12, padding: "14px 16px", fontSize: 15, color: "var(--txt)", fontFamily: "var(--sans)"}}/>
           </div>
-        </div>
-      </div>
-
-      {lv&&<div className="mx-5 mb-3 bg-cred-green/8 border border-cred-green/20 rounded-xl p-4 flex items-center gap-3 anim-pop">
-        <div className="w-10 h-10 rounded-full bg-cred-green/20 flex items-center justify-center text-lg anim-check">🎉</div>
-        <div><div className="text-sm font-bold text-cred-green">{lv.name} got the chit</div><div className="text-xs text-cred-green/60">Received {fmt(payout)}</div></div>
-      </div>}
-
-      <div className="px-5 mb-2 flex items-center justify-between">
-        <div className="text-[11px] font-bold text-cred-textSec uppercase tracking-[0.2em]">Members ({tot}/{N})</div>
-        <div className="flex gap-2 items-center">
-          {unpaid.length>0&&tot>0&&<button onClick={()=>setModal({type:"allPay"})} className="text-[11px] bg-cred-green/10 text-cred-green font-bold px-3 py-1.5 rounded-lg border border-cred-green/20 active:scale-95 tracking-wider transition-transform">✓ ALL PAID</button>}
-          {tot<N&&<button onClick={()=>setShowAdd(!showAdd)} className="text-[11px] text-cred-green font-bold tracking-wider">{showAdd?"CANCEL":"+ ADD"}</button>}
-        </div>
-      </div>
-
-      {showAdd&&<div className="mx-5 mb-3 bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder/50 dark:border-cred-border/50 rounded-2xl p-4 space-y-3 anim-pop">
-        {hasC&&<button onClick={pickC} className="w-full flex items-center justify-center gap-2 py-3.5 bg-cred-green/8 border border-cred-green/20 rounded-xl text-cred-green font-bold text-sm active:scale-95 transition-transform tracking-wider">
-          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="8" cy="5" r="3.5"/><path d="M1 16c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>PICK CONTACTS</button>}
-        {pms.length>0&&<div className="space-y-2">
-          <div className="text-[11px] text-cred-textSec font-bold tracking-wider">{pms.length} SELECTED</div>
-          <div className="max-h-28 overflow-y-auto space-y-1">{pms.map((p,i)=><div key={i} className="flex items-center gap-2 bg-cred-green/8 rounded-lg px-3 py-2 text-sm stagger" style={sd(i)}><span className="flex-1 font-semibold text-cred-bg dark:text-cred-text truncate">{p.name}</span><span className="text-cred-textSec text-xs font-mono">{p.phone}</span><button onClick={()=>setPms(pr=>pr.filter((_,j)=>j!==i))} className="text-cred-textMute hover:text-cred-red transition-colors">&times;</button></div>)}</div>
-          <NeoBtn full variant="primary" size="sm" onClick={addBulk}>Add {Math.min(pms.length,N-tot)} Members</NeoBtn>
-        </div>}
-        {pms.length>0&&<div className="flex items-center gap-3"><div className="flex-1 h-px bg-cred-lborder dark:bg-cred-border"/><span className="text-[11px] text-cred-textMute tracking-wider">OR MANUALLY</span><div className="flex-1 h-px bg-cred-lborder dark:bg-cred-border"/></div>}
-        <input type="text" value={an} onChange={e=>setAn(e.target.value)} placeholder="Name" className="w-full bg-cred-lbg dark:bg-cred-bg border border-cred-lborder dark:border-cred-border rounded-xl px-4 py-3 text-sm text-cred-bg dark:text-cred-text placeholder-cred-textMute transition-all"/>
-        <div className="flex gap-2">
-          <input type="tel" value={ap} onChange={e=>setAp(e.target.value)} placeholder="Phone" className="flex-1 bg-cred-lbg dark:bg-cred-bg border border-cred-lborder dark:border-cred-border rounded-xl px-4 py-3 text-sm text-cred-bg dark:text-cred-text placeholder-cred-textMute transition-all"/>
-          {hasC&&<button onClick={async()=>{try{const c=await navigator.contacts.select(["tel"],{multiple:false});if(c?.[0]?.tel?.[0])setAp(c[0].tel[0]);}catch{}}} className="w-12 h-12 flex items-center justify-center rounded-xl border border-cred-lborder dark:border-cred-border text-cred-green hover:bg-cred-green/10 active:scale-90 transition-all"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></button>}
-        </div>
-        <NeoBtn full variant="primary" size="sm" onClick={addMem} disabled={!an.trim()}>Add Member</NeoBtn>
-      </div>}
-
-      {tot===0&&<Empty icon="👥" title="No members yet" sub="Add members to get started"/>}
-
-      <div className="px-5 space-y-2">
-        {g.members.map((m,idx)=>{const ip=m.payments?.[vm]?.paid;const rate=getRate(m,vm,g);const bal=getTD(m,g)-getTP(m,g);const pd=m.payments?.[vm]?.date;
-          return(<div key={m.id} className="stagger bg-cred-lbg2 dark:bg-cred-bg2 rounded-xl border border-cred-lborder/50 dark:border-cred-border/50 overflow-hidden hover:border-cred-green/30 transition-colors" style={sd(idx)}>
-            <div className="flex items-center p-4 gap-3">
-              <button onClick={()=>ip?undoP(m.id):setModal({type:"pay",member:m})}
-                className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-all active:scale-90 text-sm font-bold ${ip?"bg-cred-green border-cred-green text-cred-bg anim-check":"bg-transparent border-cred-lborder dark:border-cred-border text-cred-textMute hover:border-cred-green/50"}`}>
-                {ip?"✓":""}
-              </button>
-              <button onClick={()=>nav("member",{groupId:g.id,memberId:m.id})} className="flex-1 text-left min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-cred-bg dark:text-cred-text truncate">{m.name}</span>
-                  {m.liftedMonth&&<Badge color="blue">M{m.liftedMonth}</Badge>}
-                </div>
-                <div className="flex items-center gap-3 mt-1 text-[11px] font-semibold">
-                  <span className="text-cred-textSec font-mono">{fmt(rate)}/mo</span>
-                  {bal>0?<span className="text-cred-red">Due {fmt(bal)}</span>:<span className="text-cred-green">Clear</span>}
-                </div>
-              </button>
-              {ip&&<div className="text-right flex-shrink-0">
-                <div className="text-[11px] text-cred-textSec bg-cred-lbg3 dark:bg-cred-bg3 px-2.5 py-1 rounded font-bold tracking-wider">{m.payments[vm]?.mode==="upi"?"UPI":"CASH"}</div>
-                {pd&&<div className="text-[10px] text-cred-textMute mt-1 font-mono">{fmtD(pd)}</div>}
-              </div>}
+          <div className="card ap" style={{padding: 20}}>
+            <div className="hd" style={{fontSize: 18, marginBottom: 14}}>Summary</div>
+            {[["Chit value", PRESETS[pi].label], ["Before lift", fmt(PRESETS[pi].before) + "/mo"], ["After lift", fmt(PRESETS[pi].after) + "/mo"], ["Duration", N + " months"], ["Period", fmtDF(startDate) + " \u2014 " + fmtDF(addMo(startDate, N))]].map((row, i) => (
+              <div key={i} style={{display: "flex", justifyContent: "space-between", fontSize: 14, padding: "6px 0"}}>
+                <span style={{color: "var(--txt2)"}}>{row[0]}</span>
+                <span style={{fontWeight: 600}}>{row[1]}</span>
+              </div>
+            ))}
+            <div style={{borderTop: "1px solid var(--brd)", marginTop: 8, paddingTop: 10, display: "flex", justifyContent: "space-between", fontSize: 14}}>
+              <span style={{color: "var(--txt2)"}}>Commission</span>
+              <span className="mn" style={{fontWeight: 700, color: "var(--grn)"}}>{fmt(PRESETS[pi].commission)}/mo</span>
             </div>
-          </div>);})}
+          </div>
+          <div style={{background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", borderRadius: 14, padding: 16}} className="ap">
+            <div style={{fontSize: 11, fontWeight: 700, color: "var(--grn)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 8}}>Payout preview</div>
+            <div style={{fontSize: 14}}>Month 1: <strong className="mn" style={{color: "var(--grn)"}}>{fmt(PRESETS[pi].value - PRESETS[pi].commission)}</strong></div>
+            <div style={{fontSize: 14, marginTop: 4}}>Month 2: <strong className="mn" style={{color: "var(--grn)"}}>{fmt(PRESETS[pi].value - PRESETS[pi].commission + (PRESETS[pi].after - PRESETS[pi].before))}</strong></div>
+          </div>
+          <div style={{display: "flex", gap: 12, paddingTop: 8}}>
+            <button className="neo neo-d" style={{width: "auto", flex: "none", padding: "14px 24px"}} onClick={() => setStep(0)}>Back</button>
+            <button className="neo neo-g" onClick={create}>Create Group</button>
+          </div>
+        </div>}
+      </div>
+    </div>
+  );
+}
+
+function GroupScreen({group: g, nav, updateData}) {
+  const [modal, setModal] = useState(null);
+  const [an, setAn] = useState("");
+  const [ap, setAp] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
+  const [vm, setVm] = useState(g ? g.currentMonth : 1);
+  const [pms, setPms] = useState([]);
+
+  useEffect(() => { if (g) setVm(g.currentMonth); }, [g ? g.currentMonth : 0]);
+
+  if (!g) return <div style={{padding: 40, textAlign: "center", color: "var(--txt2)"}}>Group not found</div>;
+
+  const isCur = vm === g.currentMonth;
+  const paid = getPM(g, vm);
+  const tot = g.members.length;
+  const lv = getLM(g, vm);
+  const nl = g.members.filter(m => !m.liftedMonth);
+  const unpaid = g.members.filter(m => !(m.payments && m.payments[vm] && m.payments[vm].paid));
+  const payout = getPayout(g, vm);
+
+  const addMem = () => {
+    if (!an.trim() || tot >= N) return;
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: [...x.members, {id: uid(), name: an.trim(), phone: ap.trim(), liftedMonth: null, payments: {}}]} : x)}));
+    setAn(""); setAp("");
+  };
+
+  const addBulk = () => {
+    if (!pms.length) return;
+    const add = pms.slice(0, N - tot).map(p => ({id: uid(), name: p.name, phone: p.phone, liftedMonth: null, payments: {}}));
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: [...x.members, ...add]} : x)}));
+    setPms([]);
+  };
+
+  const pickC = async () => {
+    if (!hasC) return;
+    try {
+      const c = await navigator.contacts.select(["name", "tel"], {multiple: true});
+      if (c && c.length) setPms(prev => [...prev, ...c.map(x => ({name: (x.name && x.name[0]) || "", phone: (x.tel && x.tel[0]) || ""})).filter(x => x.name)]);
+    } catch(e) {}
+  };
+
+  const recPay = (mid, mode) => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(m => m.id === mid ? {...m, payments: {...m.payments, [vm]: {paid: true, mode: mode, date: new Date().toISOString()}}} : m)} : x)}));
+    setModal(null);
+  };
+
+  const allPay = (mode) => {
+    const now = new Date().toISOString();
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(m => (m.payments && m.payments[vm] && m.payments[vm].paid) ? m : {...m, payments: {...m.payments, [vm]: {paid: true, mode: mode, date: now}}})} : x)}));
+    setModal(null);
+  };
+
+  const undoP = (mid) => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(m => {
+      if (m.id !== mid) return m;
+      const p = {...m.payments}; delete p[vm]; return {...m, payments: p};
+    })} : x)}));
+  };
+
+  const give = (mid) => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(m => m.id === mid ? {...m, liftedMonth: g.currentMonth} : m)} : x)}));
+    setModal(null);
+  };
+
+  const nextM = () => {
+    if (g.currentMonth >= N) return;
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, currentMonth: x.currentMonth + 1} : x)}));
+  };
+
+  const delG = () => {
+    updateData(d => ({...d, groups: d.groups.filter(x => x.id !== g.id)}));
+    nav("home");
+  };
+
+  const inputStyle = {width: "100%", background: "var(--bg)", border: "1px solid var(--brd)", borderRadius: 12, padding: "12px 14px", fontSize: 14, color: "var(--txt)", fontFamily: "var(--sans)"};
+
+  return (
+    <div style={{minHeight: "100vh", background: "var(--bg)", paddingBottom: 130}}>
+      <Header title={g.name} subtitle={fmt(g.value) + " \u00B7 " + N + " months"} onBack={() => nav("home")}/>
+      {g.startDate && <div style={{padding: "8px 20px 0", fontSize: 11, color: "var(--txt3)", fontWeight: 600, letterSpacing: "0.05em"}}>{fmtDF(g.startDate)} \u2014 {fmtDF(g.endDate)}</div>}
+      <div style={{padding: "12px 20px"}}><MonthNav vm={vm} cur={g.currentMonth} onChange={setVm}/></div>
+
+      {!isCur && <div className="ap" style={{margin: "0 20px 12px", background: "rgba(255,184,0,0.1)", border: "1px solid rgba(255,184,0,0.2)", borderRadius: 12, padding: "10px 16px", fontSize: 14, fontWeight: 700, textAlign: "center", color: "var(--amb)"}}>Viewing month {vm}</div>}
+
+      <div style={{padding: "0 20px 12px", display: "flex", gap: 8}}>
+        <Stat label="Due" value={fmt(getMD(g, vm))}/>
+        <Stat label="Collected" value={fmt(getMC(g, vm))} accent={true}/>
+        <Stat label="Paid" value={paid + "/" + tot}/>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-cred-lbg/90 dark:bg-cred-bg/90 backdrop-blur-xl border-t border-cred-lborder/50 dark:border-cred-border/50 px-5 py-4">
-        {isCur?<div className="flex gap-3">
-          <NeoBtn full variant="amber" onClick={()=>setModal({type:"give"})} disabled={!!getLM(g,g.currentMonth)||!nl.length}>🎁 Give Chit</NeoBtn>
-          <NeoBtn full variant="primary" onClick={()=>setModal({type:"next"})} disabled={g.currentMonth>=N}>Next Month</NeoBtn>
-          <button onClick={()=>setModal({type:"del"})} className="neo-btn neo-btn-danger w-14 h-14 flex items-center justify-center rounded-xl flex-shrink-0 text-lg">🗑</button>
-        </div>:<NeoBtn full variant="primary" onClick={()=>setVm(g.currentMonth)}>← Back to Current</NeoBtn>}
+      {/* Payout card */}
+      <div className={lv ? "ap ag" : "ap"} style={{margin: "0 20px 12px", background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", borderRadius: 16, padding: 20}}>
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "flex-end"}}>
+          <div>
+            <div className="lbl" style={{color: "var(--grn)", marginBottom: 8}}>Lifter receives</div>
+            <div className="hd" style={{fontSize: 28}}>{fmt(payout)}</div>
+          </div>
+          <div style={{textAlign: "right", fontSize: 11, color: "var(--txt2)", fontWeight: 600, lineHeight: 1.8}}>
+            <div>Pool <span className="mn">{fmt(getMD(g, vm))}</span></div>
+            <div>Commission <span className="mn" style={{color: "var(--amb)"}}>-{fmt(g.commission || 0)}</span></div>
+          </div>
+        </div>
       </div>
 
-      {modal?.type==="pay"&&<Modal title="Record Payment" onClose={()=>setModal(null)}>
-        <div className="text-center mb-6"><div className="text-cred-textSec text-sm font-semibold">{modal.member.name}</div><div className="font-serif text-4xl text-cred-bg dark:text-cred-text mt-3 anim-count">{fmt(getRate(modal.member,vm,g))}</div><div className="text-[11px] text-cred-textMute mt-2 tracking-wider">MONTH {vm}</div></div>
-        <div className="flex gap-3">
-          <PayOption label="Cash" emoji="💵" accent="bg-cred-greenLight dark:bg-cred-green/10 border-cred-green/30 text-cred-greenDark dark:text-cred-green" onClick={()=>recPay(modal.member.id,"cash")}/>
-          <PayOption label="UPI" emoji="📱" accent="bg-blue-50 dark:bg-cred-blue/10 border-cred-blue/30 text-cred-blue" onClick={()=>recPay(modal.member.id,"upi")}/>
+      {lv && <div className="ap" style={{margin: "0 20px 12px", background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", borderRadius: 14, padding: 16, display: "flex", alignItems: "center", gap: 12}}>
+        <div className="ach" style={{width: 40, height: 40, borderRadius: 20, background: "rgba(0,196,140,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20}}>🎉</div>
+        <div>
+          <div style={{fontSize: 14, fontWeight: 700, color: "var(--grn)"}}>{lv.name} got the chit</div>
+          <div style={{fontSize: 12, color: "var(--txt2)", marginTop: 2}}>Received {fmt(payout)}</div>
+        </div>
+      </div>}
+
+      {/* Members header */}
+      <div style={{padding: "0 20px 8px", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+        <div className="lbl">Members ({tot}/{N})</div>
+        <div style={{display: "flex", gap: 8, alignItems: "center"}}>
+          {unpaid.length > 0 && tot > 0 && <button onClick={() => setModal({type: "allPay"})} style={{fontSize: 11, background: "var(--grn3)", color: "var(--grn)", fontWeight: 700, padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(0,196,140,0.2)", cursor: "pointer", letterSpacing: "0.08em"}}>&#x2713; ALL PAID</button>}
+          {tot < N && <button onClick={() => setShowAdd(!showAdd)} style={{fontSize: 12, color: "var(--grn)", fontWeight: 700, background: "none", border: "none", cursor: "pointer", letterSpacing: "0.08em"}}>{showAdd ? "CANCEL" : "+ ADD"}</button>}
+        </div>
+      </div>
+
+      {/* Add form */}
+      {showAdd && <div className="card ap" style={{margin: "0 20px 12px", padding: 16, display: "flex", flexDirection: "column", gap: 12}}>
+        {hasC && <button onClick={pickC} style={{width: "100%", padding: "14px 0", borderRadius: 12, background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", color: "var(--grn)", fontWeight: 700, fontSize: 13, cursor: "pointer", letterSpacing: "0.08em"}}>PICK CONTACTS</button>}
+        {pms.length > 0 && <div style={{display: "flex", flexDirection: "column", gap: 8}}>
+          <div className="lbl">{pms.length} selected</div>
+          <div style={{maxHeight: 100, overflow: "auto", display: "flex", flexDirection: "column", gap: 4}}>
+            {pms.map((p, i) => <div key={i} className="st" style={{...sd(i), display: "flex", alignItems: "center", gap: 8, background: "var(--grn3)", borderRadius: 8, padding: "8px 12px", fontSize: 13}}>
+              <span style={{flex: 1, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{p.name}</span>
+              <span style={{color: "var(--txt3)", fontSize: 12}} className="mn">{p.phone}</span>
+              <button onClick={() => setPms(pr => pr.filter((_, j) => j !== i))} style={{background: "none", border: "none", color: "var(--txt3)", cursor: "pointer", fontSize: 14}}>&times;</button>
+            </div>)}
+          </div>
+          <button className="neo neo-g" style={{padding: "12px 20px"}} onClick={addBulk}>Add {Math.min(pms.length, N - tot)} Members</button>
+        </div>}
+        <input type="text" value={an} onChange={e => setAn(e.target.value)} placeholder="Name" style={inputStyle}/>
+        <input type="tel" value={ap} onChange={e => setAp(e.target.value)} placeholder="Phone" style={inputStyle}/>
+        <button className="neo neo-g" style={{padding: "12px 20px"}} onClick={addMem} disabled={!an.trim()}>Add Member</button>
+      </div>}
+
+      {tot === 0 && <div className="af" style={{textAlign: "center", padding: "60px 20px"}}>
+        <div style={{fontSize: 48, marginBottom: 16}}>👥</div>
+        <div className="hd" style={{fontSize: 22, marginBottom: 8}}>No members yet</div>
+        <div style={{fontSize: 14, color: "var(--txt2)"}}>Add members to get started</div>
+      </div>}
+
+      {/* Member list */}
+      <div style={{padding: "0 20px", display: "flex", flexDirection: "column", gap: 8}}>
+        {g.members.map((m, idx) => {
+          const ip = m.payments && m.payments[vm] && m.payments[vm].paid;
+          const rate = getRate(m, vm, g);
+          const bal = getTD(m, g) - getTP(m, g);
+          const pd = ip ? m.payments[vm].date : null;
+          return (
+            <div key={m.id} className="card st" style={{...sd(idx), overflow: "hidden", transition: "border-color .2s"}}>
+              <div style={{display: "flex", alignItems: "center", padding: 16, gap: 12}}>
+                <button onClick={() => ip ? undoP(m.id) : setModal({type: "pay", member: m})}
+                  className={ip ? "ach" : ""}
+                  style={{width: 48, height: 48, borderRadius: 24, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, border: ip ? "none" : "2px solid var(--brd)", background: ip ? "var(--grn)" : "transparent", color: ip ? "#0F0F0F" : "var(--txt3)", fontSize: 16, fontWeight: 700, cursor: "pointer", transition: "all .2s"}}>
+                  {ip ? "✓" : ""}
+                </button>
+                <button onClick={() => nav("member", {groupId: g.id, memberId: m.id})} style={{flex: 1, textAlign: "left", minWidth: 0, background: "none", border: "none", color: "var(--txt)", cursor: "pointer", padding: 0}}>
+                  <div style={{display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap"}}>
+                    <span style={{fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{m.name}</span>
+                    {m.liftedMonth && <Badge color="blue">M{m.liftedMonth}</Badge>}
+                  </div>
+                  <div style={{display: "flex", gap: 12, marginTop: 4, fontSize: 12, fontWeight: 600}}>
+                    <span className="mn" style={{color: "var(--txt2)"}}>{fmt(rate)}/mo</span>
+                    {bal > 0 ? <span style={{color: "var(--red)"}}>Due {fmt(bal)}</span> : <span style={{color: "var(--grn)"}}>Clear</span>}
+                  </div>
+                </button>
+                {ip && <div style={{textAlign: "right", flexShrink: 0}}>
+                  <div style={{fontSize: 11, color: "var(--txt2)", background: "var(--bg3)", padding: "4px 10px", borderRadius: 6, fontWeight: 700, letterSpacing: "0.08em"}}>{m.payments[vm].mode === "upi" ? "UPI" : "CASH"}</div>
+                  {pd && <div className="mn" style={{fontSize: 10, color: "var(--txt3)", marginTop: 4}}>{fmtD(pd)}</div>}
+                </div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom bar */}
+      <div style={{position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--bg)", borderTop: "1px solid var(--brd)", padding: 16, backdropFilter: "blur(12px)"}}>
+        {isCur ? <div style={{display: "flex", gap: 10}}>
+          <button className="neo neo-a" onClick={() => setModal({type: "give"})} disabled={!!getLM(g, g.currentMonth) || !nl.length}>🎁 Give Chit</button>
+          <button className="neo neo-g" onClick={() => setModal({type: "next"})} disabled={g.currentMonth >= N}>Next Month</button>
+          <button className="neo neo-r" style={{width: 52, flex: "none", padding: 14, fontSize: 18}} onClick={() => setModal({type: "del"})}>🗑</button>
+        </div> : <button className="neo neo-g" onClick={() => setVm(g.currentMonth)}>&#x2190; Back to Current</button>}
+      </div>
+
+      {/* Modals */}
+      {modal && modal.type === "pay" && <Modal title="Record Payment" onClose={() => setModal(null)}>
+        <div style={{textAlign: "center", marginBottom: 24}}>
+          <div style={{fontSize: 14, color: "var(--txt2)", fontWeight: 600}}>{modal.member.name}</div>
+          <div className="hd" style={{fontSize: 36, marginTop: 8}}>{fmt(getRate(modal.member, vm, g))}</div>
+          <div className="lbl" style={{marginTop: 8}}>Month {vm}</div>
+        </div>
+        <div style={{display: "flex", gap: 12}}>
+          <PayOption label="Cash" emoji="💵" bg="var(--grn3)" color="var(--grn)" onClick={() => recPay(modal.member.id, "cash")}/>
+          <PayOption label="UPI" emoji="📱" bg="rgba(75,123,245,0.08)" color="var(--blu)" onClick={() => recPay(modal.member.id, "upi")}/>
         </div>
       </Modal>}
 
-      {modal?.type==="allPay"&&<Modal title="Mark All Paid" onClose={()=>setModal(null)}>
-        <div className="text-center mb-4"><div className="text-sm text-cred-textSec font-semibold">{unpaid.length} unpaid</div><div className="font-serif text-xl text-cred-bg dark:text-cred-text mt-1">Month {vm}</div></div>
-        <div className="bg-cred-lbg dark:bg-cred-bg rounded-xl p-3 mb-5 max-h-28 overflow-y-auto space-y-1.5">{unpaid.map((m,i)=><div key={m.id} className="flex justify-between text-sm stagger" style={sd(i)}><span className="text-cred-textSec">{m.name}</span><span className="font-mono font-bold text-cred-bg dark:text-cred-text">{fmt(getRate(m,vm,g))}</span></div>)}</div>
-        <div className="flex gap-3">
-          <PayOption label="All Cash" emoji="💵" accent="bg-cred-greenLight dark:bg-cred-green/10 border-cred-green/30 text-cred-greenDark dark:text-cred-green" onClick={()=>allPay("cash")}/>
-          <PayOption label="All UPI" emoji="📱" accent="bg-blue-50 dark:bg-cred-blue/10 border-cred-blue/30 text-cred-blue" onClick={()=>allPay("upi")}/>
+      {modal && modal.type === "allPay" && <Modal title="Mark All Paid" onClose={() => setModal(null)}>
+        <div style={{textAlign: "center", marginBottom: 16}}>
+          <div style={{fontSize: 14, color: "var(--txt2)", fontWeight: 600}}>{unpaid.length} unpaid</div>
+          <div className="hd" style={{fontSize: 20, marginTop: 4}}>Month {vm}</div>
+        </div>
+        <div style={{background: "var(--bg)", borderRadius: 12, padding: 12, marginBottom: 16, maxHeight: 100, overflow: "auto"}}>
+          {unpaid.map(m => <div key={m.id} style={{display: "flex", justifyContent: "space-between", fontSize: 13, padding: "4px 0"}}>
+            <span style={{color: "var(--txt2)"}}>{m.name}</span><span className="mn" style={{fontWeight: 700}}>{fmt(getRate(m, vm, g))}</span>
+          </div>)}
+        </div>
+        <div style={{display: "flex", gap: 12}}>
+          <PayOption label="All Cash" emoji="💵" bg="var(--grn3)" color="var(--grn)" onClick={() => allPay("cash")}/>
+          <PayOption label="All UPI" emoji="📱" bg="rgba(75,123,245,0.08)" color="var(--blu)" onClick={() => allPay("upi")}/>
         </div>
       </Modal>}
 
-      {modal?.type==="give"&&<Modal title={"Give Chit \u2014 M"+g.currentMonth} onClose={()=>setModal(null)}>
-        <div className="bg-cred-green/8 border border-cred-green/20 rounded-xl p-5 mb-5 text-center anim-glow">
-          <div className="text-[11px] text-cred-green font-bold uppercase tracking-[0.2em] mb-2">Payout</div>
-          <div className="font-serif text-4xl text-cred-bg dark:text-cred-text anim-count">{fmt(getPayout(g,g.currentMonth))}</div>
+      {modal && modal.type === "give" && <Modal title={"Give Chit \u2014 M" + g.currentMonth} onClose={() => setModal(null)}>
+        <div className="ag" style={{background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", borderRadius: 14, padding: 20, textAlign: "center", marginBottom: 20}}>
+          <div className="lbl" style={{color: "var(--grn)", marginBottom: 8}}>Payout</div>
+          <div className="hd" style={{fontSize: 36}}>{fmt(getPayout(g, g.currentMonth))}</div>
         </div>
-        <div className="text-[11px] text-cred-textSec font-bold uppercase tracking-[0.2em] mb-3">Select member</div>
-        <div className="space-y-2 max-h-52 overflow-y-auto">{nl.map((m,i)=>(
-          <button key={m.id} onClick={()=>give(m.id)} style={sd(i)}
-            className="stagger w-full flex items-center gap-3 p-4 bg-cred-lbg dark:bg-cred-bg rounded-xl hover:bg-cred-green/5 active:scale-[0.98] transition-all text-left border border-cred-lborder/50 dark:border-cred-border/50 hover:border-cred-green/30">
-            <div className="w-10 h-10 rounded-full bg-cred-green/15 flex items-center justify-center font-bold text-cred-green text-sm">{m.name[0].toUpperCase()}</div>
-            <div className="flex-1 min-w-0"><div className="font-bold text-cred-bg dark:text-cred-text truncate">{m.name}</div>{m.phone&&<div className="text-xs text-cred-textMute font-mono">{m.phone}</div>}</div>
-            <svg width="14" height="14" fill="none" stroke="currentColor" className="text-cred-green" strokeWidth="2"><path d="M5 2l6 5-6 5"/></svg>
-          </button>))}</div>
+        <div className="lbl" style={{marginBottom: 12}}>Select member</div>
+        <div style={{maxHeight: 220, overflow: "auto", display: "flex", flexDirection: "column", gap: 8}}>
+          {nl.map((m, i) => (
+            <button key={m.id} className="st" onClick={() => give(m.id)} style={{...sd(i), display: "flex", alignItems: "center", gap: 12, padding: 14, background: "var(--bg)", borderRadius: 12, border: "1px solid var(--brd)", cursor: "pointer", textAlign: "left", width: "100%", transition: "border-color .2s, transform .15s", color: "var(--txt)"}} onMouseDown={e=>e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
+              <div style={{width: 40, height: 40, borderRadius: 20, background: "var(--grn3)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "var(--grn)", fontSize: 14}}>{m.name[0].toUpperCase()}</div>
+              <div style={{flex: 1, minWidth: 0}}>
+                <div style={{fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap"}}>{m.name}</div>
+                {m.phone && <div className="mn" style={{fontSize: 12, color: "var(--txt3)", marginTop: 2}}>{m.phone}</div>}
+              </div>
+              <span style={{color: "var(--grn)", fontSize: 14}}>&#x2192;</span>
+            </button>
+          ))}
+        </div>
       </Modal>}
 
-      {modal?.type==="next"&&(()=>{const cp=getPM(g,g.currentMonth);const cl=getLM(g,g.currentMonth);return<Modal title="Next Month" onClose={()=>setModal(null)}>
-        <div className="bg-cred-lbg dark:bg-cred-bg rounded-xl p-4 space-y-2.5 text-sm mb-5">
-          {[["Month",g.currentMonth+" → "+(g.currentMonth+1)],["Paid",cp+"/"+tot],["Chit given",cl?cl.name:"None"]].map(([k,v],i)=>
-            <div key={i} className="flex justify-between"><span className="text-cred-textSec">{k}</span><span className="font-bold text-cred-bg dark:text-cred-text">{v}</span></div>)}
-          <div className="flex justify-between"><span className="text-cred-textSec">Commission</span><span className="font-mono font-bold text-cred-green">{cl?fmt(g.commission):"—"}</span></div>
-        </div>
-        {cp<tot&&<div className="text-cred-amber bg-cred-amber/10 border border-cred-amber/20 rounded-xl p-3 text-sm font-semibold mb-3 anim-pop">⚠ {tot-cp} unpaid</div>}
-        {!cl&&<div className="text-cred-amber bg-cred-amber/10 border border-cred-amber/20 rounded-xl p-3 text-sm font-semibold mb-3 anim-pop">⚠ Chit not given</div>}
-        <div className="flex gap-3"><NeoBtn full variant="dark" onClick={()=>setModal(null)}>Cancel</NeoBtn><NeoBtn full variant="primary" onClick={()=>{nextM();setModal(null);}}>Confirm</NeoBtn></div>
-      </Modal>;})()}
+      {modal && modal.type === "next" && (() => {
+        const cp = getPM(g, g.currentMonth);
+        const cl = getLM(g, g.currentMonth);
+        return <Modal title="Next Month" onClose={() => setModal(null)}>
+          <div style={{background: "var(--bg)", borderRadius: 12, padding: 16, marginBottom: 16}}>
+            {[["Month", g.currentMonth + " \u2192 " + (g.currentMonth + 1)], ["Paid", cp + "/" + tot], ["Chit given", cl ? cl.name : "None"]].map((r, i) => (
+              <div key={i} style={{display: "flex", justifyContent: "space-between", fontSize: 14, padding: "5px 0"}}>
+                <span style={{color: "var(--txt2)"}}>{r[0]}</span><span style={{fontWeight: 700}}>{r[1]}</span>
+              </div>
+            ))}
+            <div style={{display: "flex", justifyContent: "space-between", fontSize: 14, padding: "5px 0"}}>
+              <span style={{color: "var(--txt2)"}}>Commission</span><span className="mn" style={{fontWeight: 700, color: "var(--grn)"}}>{cl ? fmt(g.commission) : "\u2014"}</span>
+            </div>
+          </div>
+          {cp < tot && <div className="ap" style={{color: "var(--amb)", background: "rgba(255,184,0,0.1)", border: "1px solid rgba(255,184,0,0.2)", borderRadius: 12, padding: 12, fontSize: 14, fontWeight: 600, marginBottom: 12}}>&#x26a0; {tot - cp} unpaid</div>}
+          {!cl && <div className="ap" style={{color: "var(--amb)", background: "rgba(255,184,0,0.1)", border: "1px solid rgba(255,184,0,0.2)", borderRadius: 12, padding: 12, fontSize: 14, fontWeight: 600, marginBottom: 12}}>&#x26a0; Chit not given</div>}
+          <div style={{display: "flex", gap: 10}}>
+            <button className="neo neo-d" onClick={() => setModal(null)}>Cancel</button>
+            <button className="neo neo-g" onClick={() => { nextM(); setModal(null); }}>Confirm</button>
+          </div>
+        </Modal>;
+      })()}
 
-      {modal?.type==="del"&&<Modal title="Delete Group" onClose={()=>setModal(null)}>
-        <p className="text-sm text-cred-textSec mb-5">Delete <strong className="text-cred-bg dark:text-cred-text">{g.name}</strong> permanently?</p>
-        <div className="flex gap-3"><NeoBtn full variant="dark" onClick={()=>setModal(null)}>Cancel</NeoBtn><NeoBtn full variant="danger" onClick={delG}>Delete</NeoBtn></div>
+      {modal && modal.type === "del" && <Modal title="Delete Group" onClose={() => setModal(null)}>
+        <p style={{fontSize: 14, color: "var(--txt2)", marginBottom: 20}}>Delete <strong style={{color: "var(--txt)"}}>{g.name}</strong> permanently?</p>
+        <div style={{display: "flex", gap: 10}}>
+          <button className="neo neo-d" onClick={() => setModal(null)}>Cancel</button>
+          <button className="neo neo-r" onClick={delG}>Delete</button>
+        </div>
       </Modal>}
     </div>
   );
 }
 
-// ─── MEMBER ───
-function MemberScreen({group:g,member:m,nav,updateData}){
-  const [modal,setModal]=useState(null);
-  if(!g||!m) return null;
-  const tp=getTP(m,g),td=getTD(m,g),bal=td-tp;
-  const full=(()=>{let t=0;for(let i=1;i<=N;i++)t+=getRate(m,i,g);return t;})();
-  const lp=m.liftedMonth?getPayout(g,m.liftedMonth):null;
+function MemberScreen({group: g, member: m, nav, updateData}) {
+  const [modal, setModal] = useState(null);
+  if (!g || !m) return <div style={{padding: 40, textAlign: "center", color: "var(--txt2)"}}>Not found</div>;
 
-  const recPay=(mo,mode)=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(v=>v.id===m.id?{...v,payments:{...v.payments,[mo]:{paid:true,mode,date:new Date().toISOString()}}}:v)}:x)}));setModal(null);};
-  const undoP=mo=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(v=>{if(v.id!==m.id)return v;const p={...v.payments};delete p[mo];return{...v,payments:p};})}:x)}));};
-  const undoL=()=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.map(v=>v.id===m.id?{...v,liftedMonth:null}:v)}:x)}));};
-  const rm=()=>{updateData(d=>({...d,groups:d.groups.map(x=>x.id===g.id?{...x,members:x.members.filter(v=>v.id!==m.id)}:x)}));nav("group",{groupId:g.id});};
+  const tp = getTP(m, g);
+  const td = getTD(m, g);
+  const bal = td - tp;
+  const full = (() => { let t = 0; for (let i = 1; i <= N; i++) t += getRate(m, i, g); return t; })();
+  const lp = m.liftedMonth ? getPayout(g, m.liftedMonth) : null;
 
-  return(
-    <div className="min-h-screen bg-cred-lbg dark:bg-cred-bg pb-8">
-      <Header title={m.name} subtitle={m.phone||g.name} onBack={()=>nav("group",{groupId:g.id})}/>
-      <div className="px-5 py-4 space-y-4">
-        {m.liftedMonth?<div className="bg-cred-green/8 border border-cred-green/20 rounded-2xl p-5 flex items-center justify-between anim-pop anim-glow">
-          <div><div className="text-[11px] text-cred-green font-bold uppercase tracking-[0.2em]">Lifted month {m.liftedMonth}</div>
-          <div className="font-serif text-2xl text-cred-bg dark:text-cred-text mt-1 anim-count">Received {fmt(lp)}</div>
-          <div className="text-sm text-cred-green/70 mt-1 font-semibold">Paying <span className="font-mono">{fmt(g.after)}</span>/mo</div></div>
-          <div className="text-3xl anim-check">🎉</div>
+  const recPay = (mo, mode) => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(v => v.id === m.id ? {...v, payments: {...v.payments, [mo]: {paid: true, mode: mode, date: new Date().toISOString()}}} : v)} : x)}));
+    setModal(null);
+  };
+  const undoP = (mo) => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(v => { if (v.id !== m.id) return v; const p = {...v.payments}; delete p[mo]; return {...v, payments: p}; })} : x)}));
+  };
+  const undoL = () => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.map(v => v.id === m.id ? {...v, liftedMonth: null} : v)} : x)}));
+  };
+  const rm = () => {
+    updateData(d => ({...d, groups: d.groups.map(x => x.id === g.id ? {...x, members: x.members.filter(v => v.id !== m.id)} : x)}));
+    nav("group", {groupId: g.id});
+  };
+
+  return (
+    <div style={{minHeight: "100vh", background: "var(--bg)", paddingBottom: 32}}>
+      <Header title={m.name} subtitle={m.phone || g.name} onBack={() => nav("group", {groupId: g.id})}/>
+      <div style={{padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16}}>
+        {m.liftedMonth ? <div className="ap ag" style={{background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", borderRadius: 16, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+          <div>
+            <div className="lbl" style={{color: "var(--grn)"}}>Lifted month {m.liftedMonth}</div>
+            <div className="hd" style={{fontSize: 22, marginTop: 6}}>Received {fmt(lp)}</div>
+            <div style={{fontSize: 13, color: "var(--txt2)", marginTop: 4, fontWeight: 600}}>Paying <span className="mn">{fmt(g.after)}</span>/mo</div>
+          </div>
+          <div className="ach" style={{fontSize: 32}}>🎉</div>
         </div>
-        :<div className="bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder/50 dark:border-cred-border/50 rounded-2xl p-5 anim-fade">
-          <div className="text-[11px] text-cred-textMute font-bold uppercase tracking-[0.2em]">Not lifted</div>
-          <div className="font-serif text-2xl text-cred-bg dark:text-cred-text mt-1">Paying <span className="font-mono">{fmt(g.before)}</span>/mo</div>
+        : <div className="card ap" style={{padding: 20}}>
+          <div className="lbl">Not lifted</div>
+          <div className="hd" style={{fontSize: 22, marginTop: 6}}>Paying <span className="mn">{fmt(g.before)}</span>/mo</div>
         </div>}
 
-        <div className="flex gap-2">{[["Paid",fmt(tp),true],["Due",fmt(td)],["Balance",fmt(Math.max(0,bal))]].map(([l,v,a],i)=>
-          <Stat key={i} label={l} value={v} accent={a}/>)}</div>
+        <div style={{display: "flex", gap: 8}}>
+          <Stat label="Paid" value={fmt(tp)} accent={true}/>
+          <Stat label="Due" value={fmt(td)}/>
+          <Stat label="Balance" value={fmt(Math.max(0, bal))}/>
+        </div>
 
-        <div className="bg-cred-lbg2 dark:bg-cred-bg2 border border-cred-lborder/50 dark:border-cred-border/50 rounded-xl p-4 anim-fade">
-          <div className="text-[11px] text-cred-textMute font-bold uppercase tracking-[0.15em] mb-2.5">Full term · {N} months · <span className="font-mono">{fmt(full)}</span></div>
-          <div className="flex items-center gap-3"><BarFill current={tp} total={full}/><span className="font-mono text-xs text-cred-textSec font-bold">{full>0?Math.round(tp/full*100):0}%</span></div>
+        <div className="card" style={{padding: 16}}>
+          <div className="lbl" style={{marginBottom: 10}}>Full term &middot; {N} months &middot; <span className="mn">{fmt(full)}</span></div>
+          <div style={{display: "flex", alignItems: "center", gap: 10}}>
+            <BarFill current={tp} total={full}/>
+            <span className="mn" style={{fontSize: 12, color: "var(--txt2)", fontWeight: 700}}>{full > 0 ? Math.round(tp / full * 100) : 0}%</span>
+          </div>
         </div>
 
         <div>
-          <div className="text-[11px] font-bold text-cred-textSec uppercase tracking-[0.2em] mb-3">Payment history</div>
-          <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">{Array.from({length:N},(_,i)=>{
-            const mo=i+1,ip=m.payments?.[mo]?.paid,fut=mo>g.currentMonth,cur=mo===g.currentMonth;
-            const rate=getRate(m,mo,g),isLM=m.liftedMonth===mo,pm2=m.payments?.[mo]?.mode,pd=m.payments?.[mo]?.date;
-            return<button key={mo} onClick={()=>{if(fut)return;ip?undoP(mo):setModal({type:"payM",month:mo});}} disabled={fut}
-              style={sd(i)}
-              className={`stagger relative rounded-xl p-2 text-center border transition-all active:scale-90 ${fut?"bg-cred-lbg3 dark:bg-cred-bg border-cred-lborder/30 dark:border-cred-border/30 opacity-30":ip?"bg-cred-green/8 border-cred-green/30":cur?"bg-cred-amber/10 border-cred-amber/30":"bg-cred-red/8 border-cred-red/20"}`}>
-              {isLM&&<div className="absolute -top-1 -right-1 w-4 h-4 bg-cred-blue rounded-full text-white text-[8px] flex items-center justify-center font-bold anim-check">★</div>}
-              <div className={`font-mono text-[11px] font-bold ${ip?"text-cred-green":fut?"text-cred-textMute":"text-cred-bg dark:text-cred-text"}`}>{mo}</div>
-              <div className={`text-sm mt-0.5 font-bold ${ip?"text-cred-green":"text-cred-textMute"}`}>{ip?"✓":fut?"·":"✗"}</div>
-              <div className="font-mono text-[9px] text-cred-textMute">{fmt(rate).replace("\u20b9","")}</div>
-              {ip&&pm2&&<div className="text-[8px] text-cred-textSec font-bold tracking-wider">{pm2==="upi"?"UPI":"CASH"}</div>}
-              {ip&&pd&&<div className="text-[7px] text-cred-textMute mt-px font-mono">{fmtD(pd)}</div>}
-            </button>;})}</div>
+          <div className="lbl" style={{marginBottom: 12}}>Payment history</div>
+          <div style={{display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8}}>
+            {Array.from({length: N}, (_, i) => {
+              const mo = i + 1;
+              const ip = m.payments && m.payments[mo] && m.payments[mo].paid;
+              const fut = mo > g.currentMonth;
+              const cur = mo === g.currentMonth;
+              const rate = getRate(m, mo, g);
+              const isLM = m.liftedMonth === mo;
+              const pm2 = ip ? m.payments[mo].mode : null;
+              const pd = ip ? m.payments[mo].date : null;
+              const bgColor = fut ? "var(--bg3)" : ip ? "var(--grn3)" : cur ? "rgba(255,184,0,0.1)" : "rgba(255,75,75,0.08)";
+              const bdColor = fut ? "var(--brd)" : ip ? "rgba(0,196,140,0.3)" : cur ? "rgba(255,184,0,0.3)" : "rgba(255,75,75,0.2)";
+              return (
+                <button key={mo} className="st" onClick={() => { if (fut) return; ip ? undoP(mo) : setModal({type: "payM", month: mo}); }} disabled={fut}
+                  style={{...sd(i), position: "relative", borderRadius: 12, padding: 8, textAlign: "center", border: "1px solid " + bdColor, background: bgColor, opacity: fut ? 0.3 : 1, cursor: fut ? "default" : "pointer", transition: "transform .15s", color: "var(--txt)"}}>
+                  {isLM && <div style={{position: "absolute", top: -4, right: -4, width: 16, height: 16, borderRadius: 8, background: "var(--blu)", color: "#fff", fontSize: 8, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700}}>&#x2605;</div>}
+                  <div className="mn" style={{fontSize: 11, fontWeight: 700, color: ip ? "var(--grn)" : fut ? "var(--txt3)" : "var(--txt)"}}>{mo}</div>
+                  <div style={{fontSize: 14, marginTop: 2, fontWeight: 700, color: ip ? "var(--grn)" : "var(--txt3)"}}>{ip ? "✓" : fut ? "\u00B7" : "✗"}</div>
+                  <div className="mn" style={{fontSize: 9, color: "var(--txt3)", marginTop: 2}}>{fmt(rate).replace("\u20b9", "")}</div>
+                  {ip && pm2 && <div style={{fontSize: 8, color: "var(--txt2)", fontWeight: 700, letterSpacing: "0.05em", marginTop: 1}}>{pm2 === "upi" ? "UPI" : "CASH"}</div>}
+                  {ip && pd && <div className="mn" style={{fontSize: 7, color: "var(--txt3)", marginTop: 1}}>{fmtD(pd)}</div>}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="space-y-2 pt-3">
-          {m.liftedMonth&&<NeoBtn full variant="dark" onClick={()=>setModal({type:"uL"})}>Undo Lift</NeoBtn>}
-          <NeoBtn full variant="danger" size="sm" onClick={()=>setModal({type:"rm"})}>Remove Member</NeoBtn>
+        <div style={{display: "flex", flexDirection: "column", gap: 8, paddingTop: 8}}>
+          {m.liftedMonth && <button className="neo neo-d" onClick={() => setModal({type: "uL"})}>Undo Lift</button>}
+          <button className="neo neo-r" style={{padding: "12px 20px", fontSize: 13}} onClick={() => setModal({type: "rm"})}>Remove Member</button>
         </div>
       </div>
 
-      {modal?.type==="payM"&&<Modal title={"Month "+modal.month} onClose={()=>setModal(null)}>
-        <div className="text-center mb-6"><div className="text-cred-textSec text-sm">{m.name}</div><div className="font-serif text-4xl text-cred-bg dark:text-cred-text mt-3 anim-count">{fmt(getRate(m,modal.month,g))}</div></div>
-        <div className="flex gap-3">
-          <PayOption label="Cash" emoji="💵" accent="bg-cred-greenLight dark:bg-cred-green/10 border-cred-green/30 text-cred-greenDark dark:text-cred-green" onClick={()=>recPay(modal.month,"cash")}/>
-          <PayOption label="UPI" emoji="📱" accent="bg-blue-50 dark:bg-cred-blue/10 border-cred-blue/30 text-cred-blue" onClick={()=>recPay(modal.month,"upi")}/>
+      {modal && modal.type === "payM" && <Modal title={"Month " + modal.month} onClose={() => setModal(null)}>
+        <div style={{textAlign: "center", marginBottom: 24}}>
+          <div style={{fontSize: 14, color: "var(--txt2)", fontWeight: 600}}>{m.name}</div>
+          <div className="hd" style={{fontSize: 36, marginTop: 8}}>{fmt(getRate(m, modal.month, g))}</div>
+        </div>
+        <div style={{display: "flex", gap: 12}}>
+          <PayOption label="Cash" emoji="💵" bg="var(--grn3)" color="var(--grn)" onClick={() => recPay(modal.month, "cash")}/>
+          <PayOption label="UPI" emoji="📱" bg="rgba(75,123,245,0.08)" color="var(--blu)" onClick={() => recPay(modal.month, "upi")}/>
         </div>
       </Modal>}
-      {modal?.type==="uL"&&<Modal title="Undo Lift" onClose={()=>setModal(null)}><p className="text-sm text-cred-textSec mb-5">Reset to {fmt(g.before)}/mo?</p><div className="flex gap-3"><NeoBtn full variant="dark" onClick={()=>setModal(null)}>Cancel</NeoBtn><NeoBtn full variant="danger" onClick={()=>{undoL();setModal(null);}}>Undo</NeoBtn></div></Modal>}
-      {modal?.type==="rm"&&<Modal title="Remove" onClose={()=>setModal(null)}><p className="text-sm text-cred-textSec mb-5">Remove <strong className="text-cred-bg dark:text-cred-text">{m.name}</strong>?</p><div className="flex gap-3"><NeoBtn full variant="dark" onClick={()=>setModal(null)}>Cancel</NeoBtn><NeoBtn full variant="danger" onClick={rm}>Remove</NeoBtn></div></Modal>}
+      {modal && modal.type === "uL" && <Modal title="Undo Lift" onClose={() => setModal(null)}>
+        <p style={{fontSize: 14, color: "var(--txt2)", marginBottom: 20}}>Reset to {fmt(g.before)}/mo?</p>
+        <div style={{display: "flex", gap: 10}}>
+          <button className="neo neo-d" onClick={() => setModal(null)}>Cancel</button>
+          <button className="neo neo-r" onClick={() => { undoL(); setModal(null); }}>Undo</button>
+        </div>
+      </Modal>}
+      {modal && modal.type === "rm" && <Modal title="Remove" onClose={() => setModal(null)}>
+        <p style={{fontSize: 14, color: "var(--txt2)", marginBottom: 20}}>Remove <strong>{m.name}</strong>?</p>
+        <div style={{display: "flex", gap: 10}}>
+          <button className="neo neo-d" onClick={() => setModal(null)}>Cancel</button>
+          <button className="neo neo-r" onClick={rm}>Remove</button>
+        </div>
+      </Modal>}
     </div>
   );
 }
 
-function App(){
-  const [data,setData]=useState(()=>load());const [view,setView]=useState({screen:"home"});
-  useEffect(()=>{save(data);},[data]);
-  const nav=(s,p={})=>{setView({screen:s,...p});window.scrollTo({top:0,behavior:"smooth"});};
-  const upd=fn=>setData(prev=>fn(prev));
-  const g=view.groupId?data.groups.find(x=>x.id===view.groupId):null;
-  const m=g&&view.memberId?g.members.find(x=>x.id===view.memberId):null;
-  switch(view.screen){
-    case "create":return<CreateScreen nav={nav} updateData={upd}/>;
-    case "group":return<GroupScreen group={g} nav={nav} updateData={upd}/>;
-    case "member":return<MemberScreen group={g} member={m} nav={nav} updateData={upd}/>;
-    default:return<HomeScreen data={data} nav={nav} updateData={upd}/>;
+function App() {
+  const [data, setData] = useState(() => load());
+  const [view, setView] = useState({screen: "home"});
+  useEffect(() => { save(data); }, [data]);
+  const nav = (s, p) => { setView({screen: s, ...(p || {})}); window.scrollTo({top: 0, behavior: "smooth"}); };
+  const upd = fn => setData(prev => fn(prev));
+  const g = view.groupId ? data.groups.find(x => x.id === view.groupId) : null;
+  const m = g && view.memberId ? g.members.find(x => x.id === view.memberId) : null;
+  switch (view.screen) {
+    case "create": return <CreateScreen nav={nav} updateData={upd}/>;
+    case "group": return <GroupScreen group={g} nav={nav} updateData={upd}/>;
+    case "member": return <MemberScreen group={g} member={m} nav={nav} updateData={upd}/>;
+    default: return <HomeScreen data={data} nav={nav} updateData={upd}/>;
   }
 }
+
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+
+} catch(err) {
+  document.getElementById("err").style.display = "block";
+  document.getElementById("err").textContent = "Error: " + err.message + "\n\n" + err.stack;
+}
 </script>
 </body>
 </html>
