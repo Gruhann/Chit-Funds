@@ -16,7 +16,8 @@
     :root{--bg:#F5F5F0;--bg2:#FFFFFF;--bg3:#EBEBEB;--brd:#DCDCD6;--txt:#0F0F0F;--txt2:#6B6B6B;--txt3:#999;--grn:#00C48C;--grn2:#00875F;--grn3:#E6FFF6;--blu:#4B7BF5;--amb:#FFB800;--red:#FF4B4B;--serif:'DM Serif Display',Georgia,serif;--sans:'Plus Jakarta Sans',system-ui,sans-serif;--mono:'Overpass Mono',monospace}
     @media(prefers-color-scheme:dark){:root{--bg:#0F0F0F;--bg2:#1A1A1A;--bg3:#252525;--brd:#2A2A2A;--txt:#F8F8F8;--txt2:#8A8A8A;--txt3:#555;--grn3:#0a3326}}
     *{-webkit-tap-highlight-color:transparent;box-sizing:border-box;margin:0}
-    body{font-family:var(--sans);background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+    html{height:100dvh}
+    body{font-family:var(--sans);background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;overscroll-behavior:none;min-height:100dvh;overflow-x:hidden}
     @media(prefers-color-scheme:dark){input[type="date"]{color-scheme:dark}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#2A2A2A;border-radius:4px}}
     input:focus{outline:none;border-color:var(--grn)!important;box-shadow:0 0 0 3px rgba(0,196,140,0.15)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
@@ -36,7 +37,7 @@
     .st{animation:fadeUp .45s cubic-bezier(.16,1,.3,1) both}
     .hd{font-family:var(--serif)}
     .mn{font-family:var(--mono)}
-    .neo{position:relative;font-weight:700;border-radius:12px;padding:14px 24px;font-size:14px;transition:transform .1s;cursor:pointer;border:none;width:100%;letter-spacing:0.02em}
+    .neo{position:relative;font-weight:700;border-radius:12px;padding:12px 20px;font-size:14px;transition:transform .1s;cursor:pointer;border:none;width:100%;letter-spacing:0.02em}
     .neo:active{transform:translateY(3px)}
     .neo:disabled{opacity:.35;pointer-events:none}
     .neo-g{background:var(--grn);color:#0F0F0F;box-shadow:0 4px 0 0 var(--grn2),0 8px 20px rgba(0,196,140,.25)}
@@ -160,8 +161,8 @@ function MonthNav({vm, cur, onChange}) {
 
 function PayOption({label, emoji, bg, color, onClick}) {
   return (
-    <button onClick={onClick} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "24px 0", borderRadius: 14, background: bg, border: "1px solid " + color + "33", cursor: "pointer", transition: "transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(0.95)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
-      <span style={{fontSize: 36}}>{emoji}</span>
+    <button onClick={onClick} style={{flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "18px 0", borderRadius: 14, background: bg, border: "1px solid " + color + "33", cursor: "pointer", transition: "transform .15s"}} onMouseDown={e=>e.currentTarget.style.transform="scale(0.95)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
+      <span style={{fontSize: 28}}>{emoji}</span>
       <span style={{fontWeight: 700, fontSize: 13, color: color, letterSpacing: "0.1em", textTransform: "uppercase"}}>{label}</span>
     </button>
   );
@@ -171,18 +172,18 @@ function HomeScreen({data, nav}) {
   const gs = data.groups || [];
   const te = gs.reduce((s, g) => s + getE(g), 0);
   return (
-    <div style={{minHeight: "100vh", background: "var(--bg)"}}>
-      <div className="af" style={{padding: "40px 24px 32px"}}>
-        <div className="lbl" style={{marginBottom: 12}}>Chit Fund Manager</div>
-        <div className="hd" style={{fontSize: 36, lineHeight: 1.1}}>{gs.length} Active<br/>Group{gs.length !== 1 ? "s" : ""}</div>
+    <div style={{background: "var(--bg)"}}>
+      <div className="af" style={{padding: "28px 24px 20px"}}>
+        <div className="lbl" style={{marginBottom: 8}}>Chit Fund Manager</div>
+        <div className="hd" style={{fontSize: 30, lineHeight: 1.15}}>{gs.length} Active Group{gs.length !== 1 ? "s" : ""}</div>
         {te > 0 && <div style={{marginTop: 12, display: "inline-block", background: "var(--grn3)", padding: "6px 12px", borderRadius: 8}}>
           <span style={{fontSize: 14, fontWeight: 700, color: "var(--grn)"}}>Commission: <span className="mn">{fmt(te)}</span></span>
         </div>}
       </div>
-      <div style={{padding: "0 20px 120px", display: "flex", flexDirection: "column", gap: 12}}>
-        {gs.length === 0 && <div className="af" style={{textAlign: "center", padding: "80px 20px"}}>
-          <div style={{fontSize: 48, marginBottom: 16}}>📋</div>
-          <div className="hd" style={{fontSize: 22, marginBottom: 8}}>No groups yet</div>
+      <div style={{padding: "0 20px 90px", display: "flex", flexDirection: "column", gap: 12}}>
+        {gs.length === 0 && <div className="af" style={{textAlign: "center", padding: "50px 20px"}}>
+          <div style={{fontSize: 36, marginBottom: 12}}>📋</div>
+          <div className="hd" style={{fontSize: 18, marginBottom: 6}}>No groups yet</div>
           <div style={{fontSize: 14, color: "var(--txt2)"}}>Create your first chit group</div>
         </div>}
         {gs.map((g, idx) => {
@@ -190,7 +191,7 @@ function HomeScreen({data, nav}) {
           const tot = g.members.length;
           const lft = g.members.filter(m => m.liftedMonth).length;
           return (
-            <button key={g.id} className="card st" style={{...sd(idx), padding: 20, textAlign: "left", cursor: "pointer", width: "100%", transition: "transform .15s"}} onClick={() => nav("group", {groupId: g.id})} onMouseDown={e=>e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
+            <button key={g.id} className="card st" style={{...sd(idx), padding: 16, textAlign: "left", cursor: "pointer", width: "100%", transition: "transform .15s"}} onClick={() => nav("group", {groupId: g.id})} onMouseDown={e=>e.currentTarget.style.transform="scale(0.98)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
               <div style={{display: "flex", justifyContent: "space-between", marginBottom: 14}}>
                 <div>
                   <div className="hd" style={{fontSize: 18}}>{g.name}</div>
@@ -210,7 +211,7 @@ function HomeScreen({data, nav}) {
           );
         })}
       </div>
-      <div style={{position: "fixed", bottom: 0, left: 0, right: 0, padding: 20, background: "linear-gradient(transparent, var(--bg) 40%)", paddingTop: 50}}>
+      <div style={{position: "fixed", bottom: 0, left: 0, right: 0, padding: "12px 20px", paddingBottom: 16, background: "linear-gradient(transparent, var(--bg) 30%)", paddingTop: 30}}>
         <button className="neo neo-g" onClick={() => nav("create")}>+ New Chit Group</button>
       </div>
     </div>
@@ -231,7 +232,7 @@ function CreateScreen({nav, updateData}) {
   };
 
   return (
-    <div style={{minHeight: "100vh", background: "var(--bg)"}}>
+    <div style={{background: "var(--bg)"}}>
       <Header title="New Group" onBack={() => nav("home")}/>
       <div style={{padding: "24px 20px"}}>
         {step === 0 && <div className="af">
@@ -360,7 +361,7 @@ function GroupScreen({group: g, nav, updateData}) {
   const inputStyle = {width: "100%", background: "var(--bg)", border: "1px solid var(--brd)", borderRadius: 12, padding: "12px 14px", fontSize: 14, color: "var(--txt)", fontFamily: "var(--sans)"};
 
   return (
-    <div style={{minHeight: "100vh", background: "var(--bg)", paddingBottom: 130}}>
+    <div style={{background: "var(--bg)", paddingBottom: 85}}>
       <Header title={g.name} subtitle={fmt(g.value) + " \u00B7 " + N + " months"} onBack={() => nav("home")}/>
       {g.startDate && <div style={{padding: "8px 20px 0", fontSize: 11, color: "var(--txt3)", fontWeight: 600, letterSpacing: "0.05em"}}>{fmtDF(g.startDate)} \u2014 {fmtDF(g.endDate)}</div>}
       <div style={{padding: "12px 20px"}}><MonthNav vm={vm} cur={g.currentMonth} onChange={setVm}/></div>
@@ -423,9 +424,9 @@ function GroupScreen({group: g, nav, updateData}) {
         <button className="neo neo-g" style={{padding: "12px 20px"}} onClick={addMem} disabled={!an.trim()}>Add Member</button>
       </div>}
 
-      {tot === 0 && <div className="af" style={{textAlign: "center", padding: "60px 20px"}}>
-        <div style={{fontSize: 48, marginBottom: 16}}>👥</div>
-        <div className="hd" style={{fontSize: 22, marginBottom: 8}}>No members yet</div>
+      {tot === 0 && <div className="af" style={{textAlign: "center", padding: "40px 20px"}}>
+        <div style={{fontSize: 36, marginBottom: 12}}>👥</div>
+        <div className="hd" style={{fontSize: 18, marginBottom: 6}}>No members yet</div>
         <div style={{fontSize: 14, color: "var(--txt2)"}}>Add members to get started</div>
       </div>}
 
@@ -465,7 +466,7 @@ function GroupScreen({group: g, nav, updateData}) {
       </div>
 
       {/* Bottom bar */}
-      <div style={{position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--bg)", borderTop: "1px solid var(--brd)", padding: 16, backdropFilter: "blur(12px)"}}>
+      <div style={{position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--bg)", borderTop: "1px solid var(--brd)", padding: "12px 16px", backdropFilter: "blur(12px)"}}>
         {isCur ? <div style={{display: "flex", gap: 10}}>
           <button className="neo neo-a" onClick={() => setModal({type: "give"})} disabled={!!getLM(g, g.currentMonth) || !nl.length}>🎁 Give Chit</button>
           <button className="neo neo-g" onClick={() => setModal({type: "next"})} disabled={g.currentMonth >= N}>Next Month</button>
@@ -582,7 +583,7 @@ function MemberScreen({group: g, member: m, nav, updateData}) {
   };
 
   return (
-    <div style={{minHeight: "100vh", background: "var(--bg)", paddingBottom: 32}}>
+    <div style={{background: "var(--bg)", paddingBottom: 20}}>
       <Header title={m.name} subtitle={m.phone || g.name} onBack={() => nav("group", {groupId: g.id})}/>
       <div style={{padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16}}>
         {m.liftedMonth ? <div className="ap ag" style={{background: "var(--grn3)", border: "1px solid rgba(0,196,140,0.2)", borderRadius: 16, padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center"}}>
